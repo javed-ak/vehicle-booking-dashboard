@@ -28,6 +28,8 @@ model BookingRequest {
   lastName  String
   email     String
   phone     String
+  pickup    String 
+  dropoff   String
   note      String?
   status    String @default("Pending")
 }
