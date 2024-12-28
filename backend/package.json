@@ -5,7 +5,7 @@
     "deploy": "wrangler deploy --minify"
   },
   "dependencies": {
-    "@javed-ak/booking-inputs": "^1.0.4",
+    "@javed-ak/booking-inputs": "^1.0.6",
     "@prisma/client": "^6.0.1",
     "@prisma/extension-accelerate": "^1.2.1",
     "hono": "^4.6.14",
