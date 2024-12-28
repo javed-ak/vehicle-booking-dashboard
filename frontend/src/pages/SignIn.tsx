@@ -36,7 +36,7 @@ export default function SignIn() {
   return (
     <div className="h-screen w-full flex justify-center items-center">
       <div className="border p-5 hover:shadow-lg rounded-lg w-80 flex flex-col gap-5">
-        <div className="text-2xl font-bold text-center">Login</div>
+        <img src="./BVT-Logo-for-admin-dashboard.png" alt="Black Vans Transportation" />
         <div className="flex flex-col gap-2">
             <label>Email</label>
             <Input placeholder="john@gmail.com" name="email" required onChange={(e) => {

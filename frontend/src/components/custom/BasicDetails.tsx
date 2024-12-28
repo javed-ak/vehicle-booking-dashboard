@@ -52,23 +52,26 @@ export default function BasicDetails() {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-sm">Pick Up Location</label>
+              <label className="text-sm">Pick-up Location</label>
               <Input
-                name="pickUpLocation"
-                value={requestData.phone}
+                name="pickup"
+                value={requestData.pickup}
                 onChange={handleChange}
               />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-sm">Drop Location</label>
+              <label className="text-sm">Drop-off Location</label>
               <Input
-                name="dropLoacation"
-                value={requestData.email}
+                name="dropoff"
+                value={requestData.dropoff}
                 onChange={handleChange}
               />
             </div>
             <div className="flex flex-col col-span-2 gap-2">
-              <label className="text-sm">Date & Time</label>
+              <div>
+                <label className="text-sm">Date & Time</label>
+                <div className="text-xs text-gray-500">(Edit the time below if you want the vehicle for more than 4 hours of standard slot.)</div>
+              </div>
               <Input
                 name="dateTime"
                 value={requestData.dateTime}

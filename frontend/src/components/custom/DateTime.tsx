@@ -10,7 +10,7 @@ export default function DateTime() {
   const { requestData, setRequestData } = useRequestData();
 
   const timeSlots = {
-    slot: ["10:00 am to 02:00 pm", "02:00 pm to 06:00 pm", "06:00 pm to 10:00 am"]
+    slot: ["10:00 am to 02:00 pm", "02:00 pm to 06:00 pm", "06:00 pm to 10:00 pm"]
   };
 
   const updateDateTimeInContext = (date: Date | null, time: string | null) => {
