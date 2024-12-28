@@ -9,6 +9,7 @@ import { RequestDataProvider, useRequestData } from '@/context/BookingRequestCon
 import { BACKEND_URL } from '@/config';
 import axios from 'axios';
 import RequestSuccess from './RequestSuccess';
+import { toast, ToastContainer } from 'react-toastify';
 
 function FormSectionContent() {
   const { requestData } = useRequestData(); // Ensure this is within the provider
@@ -22,6 +23,15 @@ function FormSectionContent() {
       setLoading(false)
     } catch (error) {
       console.error('Error sending request:', error);
+      toast.error("Somthing went Wrong", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
       setSeletedCard(4)
     }
   };
@@ -78,7 +88,12 @@ function FormSectionContent() {
             {selectedCard === 1 && <Vehicle />}
             {selectedCard === 2 && <DateTime />}
             {selectedCard === 3 && <BasicDetails />}
-            {selectedCard === 4 && <Summary />}
+            {selectedCard === 4 && (
+              <>
+                <ToastContainer />
+                <Summary />
+              </>
+            )}
             <div className="flex justify-end mt-5">
               {selectedCard === 4 ? (
                 <div className="flex gap-5">

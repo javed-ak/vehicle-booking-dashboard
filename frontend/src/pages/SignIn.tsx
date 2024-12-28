@@ -6,9 +6,7 @@ import { useState } from "react";
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
-import { toast } from "sonner";
-
-
+import { toast, ToastContainer } from 'react-toastify';
 
 export default function SignIn() {
   const [loading, setLoading] = useState(false)
@@ -27,7 +25,15 @@ export default function SignIn() {
       setLoading(false);
       navigate('/dashboard')
     } catch (e) {
-      toast('Email or Password are wrong!')
+      toast.error("Email or password are Wrong", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
       error: 'Something Wrong!!'
     }
     setLoading(false);
@@ -35,6 +41,7 @@ export default function SignIn() {
 
   return (
     <div className="h-screen w-full flex justify-center items-center">
+      <ToastContainer />
       <div className="border p-5 hover:shadow-lg rounded-lg w-80 flex flex-col gap-5">
         <img src="./BVT-Logo-for-admin-dashboard.png" alt="Black Vans Transportation" />
         <div className="flex flex-col gap-2">
