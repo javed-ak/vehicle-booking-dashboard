@@ -19,6 +19,8 @@ export const bookingRequestInput = z.object({
     lastName: z.string(),
     email: z.string().email(),
     phone: z.string(),
+    pickup: z.string(),
+    dropoff: z.string(),
     note: z.string().optional()
 })
 
@@ -29,6 +31,8 @@ export const updateBookingRequestInput = z.object({
     lastName: z.string(),
     email: z.string().email(),
     phone: z.string(),
+    pickup: z.string(),
+    dropoff: z.string(),
     note: z.string().optional()
 })
 

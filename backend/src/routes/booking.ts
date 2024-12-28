@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { verify } from "hono/jwt";
-import { bookingRequestInput, updateBookingRequestInput } from '@javed-ak/booking-inputs'
+import { bookingRequestInput, updateBookingRequestInput } from '@javed-ak/booking-inputs';
+import sgMail from "@sendgrid/mail";
 
 export const bookingRouter = new Hono<{
     Bindings: {
@@ -89,7 +89,7 @@ bookingRouter.put('/', async (c) => {
     } catch (e) {
         c.status(411);
         return c.json({
-            error: 'Something went wrong!' + e
+            error: 'Something went wrong!'
         })
     }
 })

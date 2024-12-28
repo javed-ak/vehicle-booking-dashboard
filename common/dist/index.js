@@ -16,19 +16,23 @@ exports.signinInput = zod_1.default.object({
 });
 exports.bookingRequestInput = zod_1.default.object({
     vehicle: zod_1.default.string(),
-    dateTime: zod_1.default.string().datetime(),
+    dateTime: zod_1.default.string(),
     firstName: zod_1.default.string(),
-    LastName: zod_1.default.string(),
+    lastName: zod_1.default.string(),
     email: zod_1.default.string().email(),
     phone: zod_1.default.string(),
-    note: zod_1.default.string()
+    pickup: zod_1.default.string(),
+    dropoff: zod_1.default.string(),
+    note: zod_1.default.string().optional()
 });
 exports.updateBookingRequestInput = zod_1.default.object({
     vehicle: zod_1.default.string(),
     dateTime: zod_1.default.string().datetime(),
     firstName: zod_1.default.string(),
-    LastName: zod_1.default.string(),
+    lastName: zod_1.default.string(),
     email: zod_1.default.string().email(),
     phone: zod_1.default.string(),
-    note: zod_1.default.string()
+    pickup: zod_1.default.string(),
+    dropoff: zod_1.default.string(),
+    note: zod_1.default.string().optional()
 });
