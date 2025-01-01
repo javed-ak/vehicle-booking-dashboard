@@ -1,13 +1,31 @@
-import { LayoutDashboard, CalendarCheck, Car, FileSpreadsheet } from 'lucide-react';
+import { LayoutDashboard, CalendarCheck, Car, FileSpreadsheet, User } from 'lucide-react';
 import { useState } from 'react';
 import { useDashboard } from '@/hooks';
 import AllBookingRequests from './AllBookingRequests';
 import DashboardContent from '@/components/custom/DashboardComponents/DashboardContent';
 import Header from '@/components/custom/DashboardComponents/Header';
+import AdminManagement from '@/components/custom/DashboardComponents/AdminManagement';
+import axios from 'axios';
 
 const BookingDashboard = () => {
   const [newRequests, setNewRequests] = useState(5);
   const { loading, dashboardData } = useDashboard();
+
+  function handleDownloadReport() {
+    axios.get("http://localhost:8787/api/v1/booking/report")
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "Booking_Report.xlsx"); // Set the file name
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      })
+      .catch((error) => {
+        console.error("Error downloading the report:", error);
+      });
+  }
 
   const [slide, setSlide] = useState(1)
 
@@ -48,6 +66,11 @@ const BookingDashboard = () => {
         <div className={`flex items-center p-3 rounded cursor-pointer active:bg-zinc-700 text-white hover:bg-zinc-500`} onClick={() => {
           setSlide(4);
         }}>
+          <div className="mr-3"><User /></div>
+          <span className="flex-grow">Admin</span>
+        </div>
+        <div className={`flex items-center p-3 rounded cursor-pointer active:bg-zinc-700 text-white hover:bg-zinc-500`} onClick={handleDownloadReport}
+        >
           <div className="mr-3"><FileSpreadsheet /></div>
           <span className="flex-grow">Report</span>
         </div>
@@ -61,6 +84,7 @@ const BookingDashboard = () => {
         {/* Dashboard Content */}
         {slide == 1 && <DashboardContent />}
         {slide == 2 && <AllBookingRequests />}
+        {slide == 4 && <AdminManagement />}
       </div>
     </div>
   )

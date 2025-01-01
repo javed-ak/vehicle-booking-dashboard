@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { bookingRequestInput, updateBookingRequestInput } from '@javed-ak/booking-inputs';
-import sgMail from "@sendgrid/mail";
+import * as XLSX from "xlsx";
 
 // sgMail.setApiKey(import.meta.env.VITE_SENDGRID_API_KEY);
 
@@ -11,6 +11,7 @@ export const bookingRouter = new Hono<{
         DATABASE_URL: string
         JWT_SECRET: string
         ADMIN_EMAIL: string
+        SENDGRID_API_KEY: string
     }
 }>();
 
@@ -22,7 +23,7 @@ bookingRouter.post('/', async (c) => {
     const body = await c.req.json();
     const { success } = bookingRequestInput.safeParse(body);
 
-    if(!success) {
+    if (!success) {
         c.status(403);
         return c.json({
             error: 'Inputs are not correct!'
@@ -42,56 +43,107 @@ bookingRouter.post('/', async (c) => {
                 note: body.note
             }
         })
+
+        const adminEmail = c.env.ADMIN_EMAIL;
+        const userEmail = body.email;
+        const sendgridApiKey = c.env.SENDGRID_API_KEY;
+
         // Prepare email content
-        const userEmail = {
-            to: body.email, // Customer email
-            from: "noreply@yourdomain.com", // Your email address (verified in SendGrid)
-            subject: "Booking Request Received – Thank You!",
-            text: `Dear ${body.firstName},
-            \n\nThank you for choosing Black Vans Transportation. We have successfully received your booking request, and our team is reviewing it.
-            \n\nBooking Details: 
-            \n\n• Name: ${body.firstName} ${body.lastName}
-            \n• Email: ${body.email}
-            \n•	Phone Number: ${body.phone}
-            \n• Vehicle: ${body.vehicle}
-            \n• Date & Time: ${body.dateTime}
-            \n• Pickup Location: ${body.pickup}
-            \n• Drop-off Location: ${body.dropoff}
-            \n\nOne of our executives will get in touch with you shortly to confirm your booking and walk you through rest of the process. Once booked, you will receive another confirmation email with all the necessary details.
-            \nIf you have any questions or need to modify your booking, please don't hesitate to contact us at +1 657-389-3470 or sales@blackvans.com.
-            \nThank you for choosing us for your journey!
-            \n\nBest regards,
-            \nCustomer Care
-            \nBlack Vans Transporation
-            \n+1 657-389-3470 | sales@blackvans.com
-            \nwww.blackvans.com`
+        const userEmailPayload = {
+            personalizations: [
+                {
+                    to: [{ email: userEmail }],
+                    subject: "Booking Request Received",
+                },
+            ],
+            from: { email: "noreply@yourdomain.com" }, // Replace with your verified sender email
+            content: [
+                {
+                    type: "text/html",
+                    value: `
+                        <p>Dear ${body.firstName}</p>
+                        <p>Thank you for choosing Black Vans Transportation. We have successfully received your booking request, and our team is reviewing it.</p>
+                        <p>Booking Details:</p>
+                        <ul>
+                            <li><strong>Name:</strong> ${body.firstName} ${body.lastName}</li>
+                            <li><strong>Email:</strong> ${body.email}</li>
+                            <li><strong>Phone Number:</strong> ${body.phone}</li>
+                            <li><strong>Vehicle:</strong> ${body.vehicle}</li>
+                            <li><strong>Pickup Location:</strong> ${body.pickup}</li>
+                            <li><strong>Drop-off Location:</strong> ${body.dropoff}</li>
+                            <li><strong>Date & Time:</strong> ${body.dateTime}</li>
+                            <li><strong>Note:</strong> ${body.note}</li>
+                        </ul>
+                        <br>
+                        <p>One of our executives will get in touch with you shortly to confirm your booking and walk you through rest of the process. Once booked, you will receive another confirmation email with all the necessary details.</p>
+                        <p>If you have any questions or need to modify your booking, please don't hesitate to contact us at +1 657-389-3470 or sales@blackvans.com.</p>
+                        <p>nThank you for choosing us for your journey!</p>
+                        <br>
+                        <p>Best regards,</p>
+                        <p>Customer Care</p>
+                        <p>Black Vans Transporation</p>
+                        <p>+1 657-389-3470 | sales@blackvans.com</p>
+                        <p>www.blackvans.com</p>`,
+                },
+            ],
         };
 
-        const adminEmail = {
-            to: c.env.ADMIN_EMAIL, // Admin email from environment variables
-            from: "noreply@yourdomain.com", // Your email address (verified in SendGrid)
-            subject: "New Booking Request Submitted",
-            text: `Dear Admin,
-            \n\nA new booking request has been submitted through the website. Please review the details below:
-            \n\nCustomer Information:
-            \n•	Name: ${body.firstName} ${body.lastName}
-            \n•	Email: ${body.email}
-            \n•	Phone Number: ${body.phone}
-            \n\nBooking Details:
-            \n•	Vehicle Requested: ${body.vehicle}
-            \n• Pickup Location: ${body.pickup}
-            \n• Drop-off Location: ${body.dropoff}
-            \n• Date & Time: ${body.dateTime}
-            \n\nTo accept or reject the booking, log into the admin dashboard: [Admin Portal URL]`
+        const adminEmailPayload = {
+            personalizations: [
+                {
+                    to: [{ email: adminEmail }],
+                    subject: "New Booking Request Submitted",
+                },
+            ],
+            from: { email: "javedakhtary15@gmail.com" }, // Replace with your verified sender email
+            content: [
+                {
+                    type: "text/html",
+                    value: `
+                        <p>Dear Admin</p>
+                        <p>A new booking request has been submitted through the website. Please review the details below:</p>
+                        <br>
+                        <p>Customer Information:</p>
+                        <ul>
+                            <li><strong>Name:</strong> ${body.firstName} ${body.lastName}</li>
+                            <li><strong>Email:</strong> ${body.email}</li>
+                            <li><strong>Phone Number:</strong> ${body.phone}</li>
+                            <li><strong>Vehicle:</strong> ${body.vehicle}</li>
+                            <li><strong>Pickup:</strong> ${body.pickup}</li>
+                            <li><strong>Dropoff:</strong> ${body.dropoff}</li>
+                            <li><strong>Date & Time:</strong> ${body.dateTime}</li>
+                        </ul>
+                        <p>To accept or reject the booking, log into the admin dashboard: [Admin Portal URL]</p>`,
+                },
+            ],
         };
 
-        // Send emails
-        await sgMail.send(userEmail);
-        await sgMail.send(adminEmail);
+        // Send emails using the SendGrid API
+        const sendEmail = async (payload: object) => {
+            const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${sendgridApiKey}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                console.error("Failed to send email:", await response.text());
+            }
+        };
+
+        await Promise.all([
+            sendEmail(userEmailPayload),
+            sendEmail(adminEmailPayload),
+        ]);
 
         return c.json({
-            id: request.id
-        })
+            id: request.id,
+            message: "Booking request submitted and emails sent successfully.",
+        });
+
     } catch (e) {
         c.status(411);
         console.log(e);
@@ -154,6 +206,49 @@ bookingRouter.get('/bulk', async (c) => {
         bookings
     })
 })
+
+bookingRouter.get('/report', async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
+    try {
+        const bookings = await prisma.bookingRequest.findMany();
+
+        // Format data for Excel
+        const formattedData = bookings.map((booking) => ({
+            ID: booking.id,
+            Vehicle: booking.vehicle,
+            Date_Time: booking.dateTime,
+            First_Name: booking.firstName,
+            Last_Name: booking.lastName,
+            Email: booking.email,
+            Phone: booking.phone,
+            Pickup: booking.pickup,
+            Dropoff: booking.dropoff,
+            Note: booking.note,
+            Status: booking.status,
+        }));
+
+        // Create a new workbook and add the data
+        const worksheet = XLSX.utils.json_to_sheet(formattedData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Bookings");
+
+        // Convert the workbook to a buffer
+        const buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
+        return c.json({
+            buffer
+        })
+        // Set the response headers for file download
+        // c.res.headers.set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        // c.res.headers.set("Content-Disposition", 'attachment; filename="Booking_Report.xlsx"');
+        // c.res.body = buffer;
+        // return c;
+    } catch (error) {
+        return c.json({ error: "Failed to generate report"});
+    }
+});
 
 bookingRouter.get('/:id', async (c) => {
     const prisma = new PrismaClient({

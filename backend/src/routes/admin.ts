@@ -85,3 +85,24 @@ adminRouter.post('/signin', async (c) => {
         })
     }
 })
+
+adminRouter.get('/', async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
+    const body = await c.req.json();
+    
+    try {
+        const admins = await prisma.admin.findMany()
+
+        return c.json({
+            admins
+        })
+    } catch (e) {
+        c.status(403)
+        return c.json({
+            msg: 'Error while Signing In!'
+        })
+    }
+})

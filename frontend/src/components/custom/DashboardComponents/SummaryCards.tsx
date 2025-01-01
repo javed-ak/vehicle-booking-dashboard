@@ -7,7 +7,7 @@ export default function SummaryCards() {
     
     // Calculate summary statistics
     const totalBookings = dashboardData.length;
-    const approvedBookings = dashboardData.filter(req => req.status === 'Approved').length;
+    const approvedBookings = dashboardData.filter(req => req.status === 'Accepted').length;
     const rejectedBookings = dashboardData.filter(req => req.status === 'Rejected').length;
     return (
         <div className="grid grid-cols-3 gap-4 mb-6">

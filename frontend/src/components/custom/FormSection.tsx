@@ -21,6 +21,7 @@ function FormSectionContent() {
     try {
       await axios.post(`${BACKEND_URL}/api/v1/booking`, requestData);
       setLoading(false)
+      // Send Email notification to admin and user that their request is send successfully
     } catch (error) {
       console.error('Error sending request:', error);
       toast.error("Somthing went Wrong", {
