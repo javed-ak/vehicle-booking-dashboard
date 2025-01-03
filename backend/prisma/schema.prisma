@@ -32,12 +32,16 @@ model BookingRequest {
   dropoff   String
   note      String?
   status    String  @default("Pending")
+
+  BookedSlot BookedSlot[]
 }
 
 model BookedSlot {
-  id   Int      @id @default(autoincrement())
-  date DateTime
-  slot String
+  id               Int            @id @default(autoincrement())
+  request          BookingRequest @relation(fields: [bookingRequestId], references: [id])
+  bookingRequestId String
+  date             DateTime
+  slot             String
 
   @@unique([date, slot])
   @@map("booked_slots")

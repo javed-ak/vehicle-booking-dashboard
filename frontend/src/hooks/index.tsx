@@ -171,3 +171,26 @@ export const useVehicle = () => {
     vehicles,
   };
 }
+
+export const useRequests = () => {
+  const [loading, setLoading] = useState(true);
+  const [requests, setRequests] = useState(0);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axios
+      .get(`${BACKEND_URL}/api/v1/booking/requests`)
+      .then((response) => {
+        setRequests(response.data.requests);
+        setLoading(false);
+      })
+      .catch(() => {
+        navigate("/signin");
+      });
+  }, []);
+
+  return {
+    loading,
+    requests,
+  };
+}

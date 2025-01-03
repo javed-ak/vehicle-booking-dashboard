@@ -69,7 +69,7 @@ export default function AdminManagement() {
                 <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                         Admin
-                        <Button className="text-white bg-blue-400 hover:cursor-pointer hover:bg-blue-700"
+                        <Button className="text-white cursor-pointer"
                             onClick={openModal}
                         >Add Admin</Button>
                     </CardTitle>

@@ -1,6 +1,6 @@
 import { LayoutDashboard, CalendarCheck, Car, FileSpreadsheet, User } from 'lucide-react';
 import { useState } from 'react';
-import { useDashboard } from '@/hooks';
+import { useDashboard, useRequests } from '@/hooks';
 import AllBookingRequests from './AllBookingRequests';
 import DashboardContent from '@/components/custom/DashboardComponents/DashboardContent';
 import Header from '@/components/custom/DashboardComponents/Header';
@@ -10,7 +10,7 @@ import AddVehicle from '@/components/custom/DashboardComponents/AddVehicle';
 import Loader from '@/components/custom/Loader';
 
 const BookingDashboard = () => {
-  const [newRequests, setNewRequests] = useState(5);
+  const { requests } = useRequests();
   const { loading, dashboardData } = useDashboard();
 
   function handleDownloadReport() {
@@ -56,7 +56,7 @@ const BookingDashboard = () => {
           <div className="mr-3"><CalendarCheck /></div>
           <span className="flex-grow">Booking Requests</span>
           <span className="bg-red-500 text-white rounded-full px-2 py-1 text-xs">
-            {newRequests}
+            {requests}
           </span>
         </div>
         <div className={`flex items-center p-3 rounded cursor-pointer active:bg-zinc-700 text-white hover:bg-zinc-500`} onClick={() => {

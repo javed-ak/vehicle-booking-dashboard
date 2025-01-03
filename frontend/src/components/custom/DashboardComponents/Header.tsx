@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useRequests } from "@/hooks";
 import { Bell, LogOut, Settings, User } from "lucide-react";
-import { useState } from "react";
 
 // Admin user details
 const adminUser = {
@@ -12,7 +12,7 @@ const adminUser = {
 };
 
 export default function Header() {
-    const [newRequests, setNewRequests] = useState(5);
+    const { loading, requests } = useRequests();
 
     // Logout handler
     const handleLogout = () => {
@@ -25,11 +25,11 @@ export default function Header() {
             <div className="flex items-center space-x-4">
                 <div className="relative">
                     <Bell
-                        className={`h-6 w-6 ${newRequests > 0 ? 'text-orange-400 animate-bounce' : 'text-gray-500'}`}
+                        className={`h-6 w-6 ${requests > 0 ? 'text-orange-400 animate-bounce' : 'text-gray-500'}`}
                     />
-                    {newRequests > 0 && (
+                    {requests > 0 && (
                         <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full px-2 py-1 text-xs">
-                            {newRequests}
+                            {requests}
                         </span>
                     )}
                 </div>

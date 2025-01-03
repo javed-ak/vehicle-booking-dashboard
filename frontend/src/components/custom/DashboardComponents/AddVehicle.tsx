@@ -55,7 +55,7 @@ export default function VehicleManagement() {
                 <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                         Vechicle
-                        <Button className="text-white bg-blue-400 hover:cursor-pointer hover:bg-blue-700"
+                        <Button className="text-white hover:cursor-pointer "
                             onClick={openModal}
                         >Add Vehicle</Button>
                     </CardTitle>
@@ -104,7 +104,7 @@ export default function VehicleManagement() {
                             {success && <p className="text-green-500 text-center">{success}</p>}
                             <button
                                 type="submit"
-                                className="w-full bg-blue-500 text-white py-2 rounded-md"
+                                className="w-full p-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500"
                             >
                                 Add Vehicle
                             </button>

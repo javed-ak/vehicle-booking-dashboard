@@ -36,12 +36,6 @@ bookingRouter.post('/', async (c) => {
         })
     }
     try {
-        await prisma.bookedSlot.create({
-            data: {
-                date: dateObject,  // Store the date as Date object
-                slot: slot         // Store the time slot
-            }
-        });
 
         const request = await prisma.bookingRequest.create({
             data: {
@@ -57,6 +51,13 @@ bookingRouter.post('/', async (c) => {
             }
         })
 
+        await prisma.bookedSlot.create({
+            data: {
+                bookingRequestId: request.id,
+                date: dateObject,  // Store the date as Date object
+                slot: slot         // Store the time slot
+            }
+        });
 
 
         const adminEmail = c.env.ADMIN_EMAIL;
@@ -200,6 +201,23 @@ bookingRouter.put('/', async (c) => {
                 status: body.status
             }
         })
+
+        if (body.status === 'Rejected') {
+            const bookingSlot = await prisma.bookedSlot.findFirst({
+                where: {
+                    bookingRequestId: body.id
+                }, select: {
+                    id: true
+                }
+            })
+
+            await prisma.bookedSlot.delete({
+                where: {
+                    id: bookingSlot?.id
+                }
+            })
+
+        }
         return c.json({
             id: request.id
         })
@@ -216,7 +234,11 @@ bookingRouter.get('/bulk', async (c) => {
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate())
 
-    const bookings = await prisma.bookingRequest.findMany();
+    const bookings = await prisma.bookingRequest.findMany({
+        orderBy: {
+            dateTime: 'desc'
+        }
+    });
     return c.json({
         bookings
     })
@@ -351,6 +373,31 @@ bookingRouter.get('/booked-slots/:date', async (c) => {
         await prisma.$disconnect();
     }
 });
+
+bookingRouter.get('/requests', async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
+    try {
+        const bookings = await prisma.bookingRequest.findMany({
+            where: {
+                status: 'Pending'
+            }, select: {
+                id: true,
+            }
+
+        });
+        return c.json({
+            requests: bookings.length
+        })
+    } catch (e) {
+        c.status(411);
+        return c.json({
+            error: 'Error while fetching pending booking requests'
+        })
+    }
+})
 
 bookingRouter.get('/:id', async (c) => {
     const prisma = new PrismaClient({
