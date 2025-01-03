@@ -94,7 +94,8 @@ adminRouter.get('/', async (c) => {
     try {
         const admins = await prisma.admin.findMany({
             select: {
-                name: true
+                name: true,
+                email: true
             }
         })
         c.status(200);

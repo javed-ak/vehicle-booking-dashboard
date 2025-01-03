@@ -1,12 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAdmin } from "@/hooks";
-import { Plus } from "lucide-react";
 import { X } from "lucide-react";
 import { useState } from "react";
 import Modal from 'react-modal';
 import axios from 'axios';
 import { BACKEND_URL } from "@/config";
 import Loader from "../Loader";
+import { Button } from "@/components/ui/button";
 
 export default function AdminManagement() {
     // @ts-ignore
@@ -69,17 +69,18 @@ export default function AdminManagement() {
                 <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                         Admin
-                        <Plus size={36} className="text-white bg-blue-400 hover:cursor-pointer"
+                        <Button className="text-white bg-blue-400 hover:cursor-pointer hover:bg-blue-700"
                             onClick={openModal}
-                        />
+                        >Add Admin</Button>
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    {loading ? <Loader /> : <div className="space-y-4">
+                    {loading ? <Loader /> : <div className="space-y-4 text-lg">
                         {adminData.map((admin: any) => (
                             <div
                                 className="flex justify-between items-center px-4 py-2 border-b border-gray-200"
                             >{admin.name}
+                                <p className="text-slate-400 text-md">{admin.email}</p>
                             </div>
                         ))}
                     </div>}
