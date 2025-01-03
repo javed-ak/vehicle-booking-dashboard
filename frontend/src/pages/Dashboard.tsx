@@ -1,5 +1,5 @@
 import { LayoutDashboard, CalendarCheck, Car, FileSpreadsheet, User } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDashboard, useRequests } from '@/hooks';
 import AllBookingRequests from './AllBookingRequests';
 import DashboardContent from '@/components/custom/DashboardComponents/DashboardContent';
@@ -8,10 +8,19 @@ import AdminManagement from '@/components/custom/DashboardComponents/AdminManage
 import axios from 'axios';
 import AddVehicle from '@/components/custom/DashboardComponents/AddVehicle';
 import Loader from '@/components/custom/Loader';
+import { useNavigate } from 'react-router-dom';
 
 const BookingDashboard = () => {
   const { requests } = useRequests();
   const { loading, dashboardData } = useDashboard();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/signin');
+    }
+  }, []);
 
   function handleDownloadReport() {
     axios.get("http://localhost:8787/api/v1/booking/report")

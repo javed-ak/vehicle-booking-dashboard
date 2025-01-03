@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useRequests } from "@/hooks";
 import { Bell, LogOut, Settings, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // Admin user details
 const adminUser = {
@@ -14,9 +15,10 @@ const adminUser = {
 export default function Header() {
     const { loading, requests } = useRequests();
 
-    // Logout handler
+    const navigate = useNavigate();
     const handleLogout = () => {
-        console.log('Logging out');
+        localStorage.removeItem('token');
+        navigate('/signin')
     };
 
     return (
@@ -46,28 +48,22 @@ export default function Header() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56">
                         <DropdownMenuLabel>
-                            <div className="flex flex-col">
+                            <div className="flex flex-col text-center">
                                 <span className="font-medium">{adminUser.name}</span>
                                 <span className="text-xs text-gray-500">{adminUser.email}</span>
-                                <span className="text-xs text-orange-600">{adminUser.role}</span>
+
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                            <User className="mr-2 h-4 w-4" />
-                            <span>Profile</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <Settings className="mr-2 h-4 w-4" />
-                            <span>Settings</span>
-                        </DropdownMenuItem>
+
+
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                             className="text-red-600 focus:text-red-600"
-                            onSelect={handleLogout}
+                            onClick={handleLogout}
                         >
                             <LogOut className="mr-2 h-4 w-4" />
-                            <span>Logout</span>
+                            <span >Logout</span>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
