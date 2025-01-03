@@ -14,22 +14,37 @@ datasource db {
 }
 
 model Admin {
-  id        String @id @default(uuid())
-  email     String @unique
-  name      String
-  password  String
+  id       String @id @default(uuid())
+  email    String @unique
+  name     String
+  password String
 }
 
 model BookingRequest {
-  id        String @id @default(uuid())
+  id        String  @id @default(uuid())
   vehicle   String
   dateTime  String
   firstName String
   lastName  String
   email     String
   phone     String
-  pickup    String 
+  pickup    String
   dropoff   String
   note      String?
-  status    String @default("Pending")
+  status    String  @default("Pending")
+}
+
+model BookedSlot {
+  id   Int      @id @default(autoincrement())
+  date DateTime
+  slot String
+
+  @@unique([date, slot])
+  @@map("booked_slots")
+}
+
+model Vehicle {
+  id       String @id @default(uuid())
+  name     String
+  imageUrl String
 }

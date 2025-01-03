@@ -1,12 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css"; // Import calendar styles
 import { format } from "date-fns";
 import { useRequestData } from "@/context/BookingRequestContext";
+import axios from "axios";
+import { BACKEND_URL } from "@/config";
 
 export default function DateTime() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+  const [bookedDates, setBookedDates] = useState<string[]>([]);
   const { requestData, setRequestData } = useRequestData();
 
   const timeSlots = {
@@ -21,11 +25,13 @@ export default function DateTime() {
         dateTime: formattedDateTime, // Save formatted date-time string
       }));
     }
+
   };
 
   const handleDateChange = (date: Date) => {
     setSelectedDate(date);
-    updateDateTimeInContext(date, selectedTime);
+    // updateDateTimeInContext(date, selectedTime);
+    fetchBookedSlots(date);
   };
 
   const handleTimeSlotClick = (time: string) => {
@@ -40,6 +46,53 @@ export default function DateTime() {
     return "No date and time selected";
   };
 
+  const fetchBookedSlots = async (date: Date) => {
+    try {
+      const formattedDate = format(date, "yyyy-MM-dd");
+      const response = await axios.get(`${BACKEND_URL}/api/v1/booking/booked-slots/${formattedDate}`);
+      if (!response.data.message) {
+        const bookedSlotsData = response.data.map((slot: { slot: string }) => slot.slot);
+        setBookedSlots(bookedSlotsData);
+      } else {
+        setBookedSlots([]);
+      }
+
+    } catch (error) {
+      setBookedSlots([]);
+      console.error("Error fetching booked slots", error);
+    }
+  };
+
+  const fetchBookedDates = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/v1/booking/booked-dates`);
+
+      const allSlotsPerDay = 3;
+      const bookedDates = [];
+
+      for (const [date, slots] of Object.entries(response.data)) {
+        // @ts-ignore
+        if (slots.length === allSlotsPerDay) {
+          bookedDates.push(date);
+        }
+      }
+      setBookedDates(bookedDates);
+    } catch (error) {
+      console.error("Error fetching booked slots", error);
+    }
+  };
+
+
+  const tileDisabled = ({ date }: { date: Date }) => {
+    const formattedDate = format(date, "yyyy-MM-dd");
+    return bookedDates.includes(formattedDate);
+  };
+
+
+  useEffect(() => {
+    fetchBookedDates();
+  }
+    , []);
   return (
     <div>
       <div className="font-bold text-xl mb-5">Select Date & Time</div>
@@ -61,6 +114,7 @@ export default function DateTime() {
               }
               return undefined;
             }}
+            tileDisabled={tileDisabled} // Disable booked dates
           />
         </div>
 
@@ -74,12 +128,15 @@ export default function DateTime() {
                   {slots.map((slot) => (
                     <button
                       key={slot}
-                      className={`border p-3 rounded-lg transition-all ${
-                        selectedTime === slot
+                      className={`border p-3 rounded-lg transition-all ${bookedSlots.includes(slot)
+                        ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                        // Disable booked slot
+                        : selectedTime === slot
                           ? "bg-orange-50 border-orange-500"
                           : "hover:bg-gray-100"
-                      }`}
-                      onClick={() => handleTimeSlotClick(slot)}
+                        }`}
+                      onClick={() => bookedSlots && !bookedSlots.includes(slot) && handleTimeSlotClick(slot)} // Only trigger click if the slot is not booked
+                      disabled={bookedSlots.includes(slot)} // Disable button if slot is booked
                     >
                       {slot}
                     </button>

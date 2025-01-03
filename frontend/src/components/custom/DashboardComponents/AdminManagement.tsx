@@ -1,10 +1,11 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAdmin } from "@/hooks";
-import { Link } from "react-router-dom";
+
 
 export default function AdminManagement() {
     const { loading, adminData } = useAdmin();
+    console.log(adminData);
+
     return (
         <div className="p-6 overflow-y-auto flex-grow">
             {/* Booking Requests */}

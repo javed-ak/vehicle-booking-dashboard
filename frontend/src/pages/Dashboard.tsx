@@ -6,6 +6,8 @@ import DashboardContent from '@/components/custom/DashboardComponents/DashboardC
 import Header from '@/components/custom/DashboardComponents/Header';
 import AdminManagement from '@/components/custom/DashboardComponents/AdminManagement';
 import axios from 'axios';
+import AddVehicle from '@/components/custom/DashboardComponents/AddVehicle';
+import AddAdmin from '@/components/custom/DashboardComponents/AddAdmin';
 
 const BookingDashboard = () => {
   const [newRequests, setNewRequests] = useState(5);
@@ -69,6 +71,12 @@ const BookingDashboard = () => {
           <div className="mr-3"><User /></div>
           <span className="flex-grow">Admin</span>
         </div>
+        <div className={`flex items-center p-3 rounded cursor-pointer active:bg-zinc-700 text-white hover:bg-zinc-500`} onClick={() => {
+          setSlide(5);
+        }}>
+          <div className="mr-3"><User /></div>
+          <span className="flex-grow">Add Admin</span>
+        </div>
         <div className={`flex items-center p-3 rounded cursor-pointer active:bg-zinc-700 text-white hover:bg-zinc-500`} onClick={handleDownloadReport}
         >
           <div className="mr-3"><FileSpreadsheet /></div>
@@ -84,7 +92,9 @@ const BookingDashboard = () => {
         {/* Dashboard Content */}
         {slide == 1 && <DashboardContent />}
         {slide == 2 && <AllBookingRequests />}
+        {slide == 3 && <AddVehicle />}
         {slide == 4 && <AdminManagement />}
+        {slide == 5 && <AddAdmin />}
       </div>
     </div>
   )

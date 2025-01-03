@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { bookingRequestInput, updateBookingRequestInput } from '@javed-ak/booking-inputs';
 import * as XLSX from "xlsx";
+import { parse, format } from 'date-fns';
 
 // sgMail.setApiKey(import.meta.env.VITE_SENDGRID_API_KEY);
 
@@ -22,6 +23,11 @@ bookingRouter.post('/', async (c) => {
 
     const body = await c.req.json();
     const { success } = bookingRequestInput.safeParse(body);
+    const { dateTime } = body;
+    const [date, slot] = dateTime.split(' - '); // Splitting date and slot
+    const dateObject = new Date(date);
+    dateObject.setHours(dateObject.getHours() + 5);       // Add 5 hours
+    dateObject.setMinutes(dateObject.getMinutes() + 30);
 
     if (!success) {
         c.status(403);
@@ -30,6 +36,13 @@ bookingRouter.post('/', async (c) => {
         })
     }
     try {
+        await prisma.bookedSlot.create({
+            data: {
+                date: dateObject,  // Store the date as Date object
+                slot: slot         // Store the time slot
+            }
+        });
+
         const request = await prisma.bookingRequest.create({
             data: {
                 vehicle: body.vehicle,
@@ -43,6 +56,8 @@ bookingRouter.post('/', async (c) => {
                 note: body.note
             }
         })
+
+
 
         const adminEmail = c.env.ADMIN_EMAIL;
         const userEmail = body.email;
@@ -246,7 +261,94 @@ bookingRouter.get('/report', async (c) => {
         // c.res.body = buffer;
         // return c;
     } catch (error) {
-        return c.json({ error: "Failed to generate report"});
+        return c.json({ error: "Failed to generate report" });
+    }
+});
+
+bookingRouter.get('/booked-dates', async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+    try {
+        const bookedDates = await prisma.bookedSlot.findMany({
+            select: {
+                date: true,
+                slot: true
+            },
+            orderBy: {
+                date: 'asc'
+            }
+        });
+        const groupedByDate = bookedDates.reduce((acc, current) => {
+            const dateString = current.date.toISOString().split('T')[0]; // 
+            // @ts-ignore
+            if (!acc[dateString]) {
+                // @ts-ignore
+                acc[dateString] = [];
+            }
+            // @ts-ignore
+            acc[dateString].push(current.slot); // Push the slot to the date group
+            return acc;
+        }, {});
+        return c.json(groupedByDate);
+
+    } catch (error) {
+        console.error(error);
+        c.status(500); // Internal server error
+        return c.json({
+            error: 'An error occurred while fetching the booked dates.'
+        });
+    }
+});
+
+bookingRouter.get('/booked-slots/:date', async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
+    const date = c.req.param('date') // Date passed as URL parameter (e.g., '2025-01-10')
+
+    try {
+        // Convert the date string to a Date object
+        const dateObject = new Date(date);
+
+        // @ts-ignore
+        if (isNaN(dateObject)) {
+            c.status(400);
+            return c.json({
+                error: 'Invalid date format.'
+            });
+        }
+
+        // Fetch all booked slots for the given date
+        const bookedSlots = await prisma.bookedSlot.findMany({
+            where: {
+                date: dateObject // Match by the parsed date
+            },
+            select: {
+                slot: true  // Return only the slot for the given date
+            },
+            orderBy: {
+                slot: 'asc'  // Order slots by ascending time
+            }
+        });
+
+        if (bookedSlots.length === 0) {
+            return c.json({
+                message: 'No slots booked for this date.'
+            });
+        }
+
+        return c.json(bookedSlots);
+
+    } catch (error) {
+        console.error(error);
+        c.status(500); // Internal server error
+        return c.json({
+            error: 'An error occurred while fetching the booked slots for this date.'
+        });
+    } finally {
+        await prisma.$disconnect();
     }
 });
 
@@ -273,3 +375,5 @@ bookingRouter.get('/:id', async (c) => {
         })
     }
 })
+
+

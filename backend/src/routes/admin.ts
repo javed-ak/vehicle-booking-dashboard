@@ -19,7 +19,7 @@ adminRouter.post('/signup', async (c) => {
     const body = await c.req.json();
     const { success } = signUpInput.safeParse(body);
 
-    if(!success) {
+    if (!success) {
         c.status(411);
         return c.json({
             error: 'Inputs are not correct'
@@ -33,7 +33,8 @@ adminRouter.post('/signup', async (c) => {
                 password: body.password
             }
         })
-        const token = await sign({id: user.id}, c.env.JWT_SECRET)
+        const token = await sign({ id: user.id }, c.env.JWT_SECRET)
+        c.status(200)
         return c.text(
             'Bearer ' + token
         )
@@ -53,7 +54,7 @@ adminRouter.post('/signin', async (c) => {
     const body = await c.req.json();
     const { success } = signinInput.safeParse(body);
 
-    if(!success) {
+    if (!success) {
         c.status(403);
         return c.json({
             error: 'Inputs are not correct'
@@ -67,14 +68,14 @@ adminRouter.post('/signin', async (c) => {
             }
         })
 
-        if(!user) {
+        if (!user) {
             c.status(403)
             return c.json({
-              error: 'Email or Password was wrong!'
+                error: 'Email or Password was wrong!'
             })
         }
 
-        const token = await sign({id: user.id}, c.env.JWT_SECRET)
+        const token = await sign({ id: user.id }, c.env.JWT_SECRET)
         return c.text(
             'Bearer ' + token
         )
@@ -92,10 +93,9 @@ adminRouter.get('/', async (c) => {
     }).$extends(withAccelerate())
 
     const body = await c.req.json();
-    
+
     try {
         const admins = await prisma.admin.findMany()
-
         return c.json({
             admins
         })
