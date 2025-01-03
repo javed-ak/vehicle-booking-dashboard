@@ -44,7 +44,6 @@ model BookedSlot {
 }
 
 model Vehicle {
-  id       String @id @default(uuid())
-  name     String
-  imageUrl String
+  id   String @id @default(uuid())
+  name String
 }

@@ -58,8 +58,7 @@ export const useAdmin = () => {
         }
       })
         .then(response => {
-          console.log(response.data)
-          setAdminData(response.data.admins);
+          setAdminData(response.data);
           setLoading(false);
         })
     }, []);
@@ -150,3 +149,25 @@ export const useDashboard = () => {
   };
 };
 
+export const useVehicle = () => {
+  const [loading, setLoading] = useState(true);
+  const [vehicles, setVehicles] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axios
+      .get(`${BACKEND_URL}/api/v1/admin/vehicle`)
+      .then((response) => {
+        setVehicles(response.data);
+        setLoading(false);
+      })
+      .catch(() => {
+        navigate("/signin");
+      });
+  }, []);
+
+  return {
+    loading,
+    vehicles,
+  };
+}

@@ -20,7 +20,6 @@ adminRouter.post('/signup', async (c) => {
     const { success } = signUpInput.safeParse(body);
 
     if (!success) {
-        c.status(411);
         return c.json({
             error: 'Inputs are not correct'
         })
@@ -92,17 +91,65 @@ adminRouter.get('/', async (c) => {
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate())
 
+    try {
+        const admins = await prisma.admin.findMany({
+            select: {
+                name: true
+            }
+        })
+        c.status(200);
+        return c.json(admins)
+    } catch (e) {
+        c.status(403)
+        return c.json({
+            msg: 'Error while Fetching Admins!'
+        })
+    }
+})
+
+adminRouter.post('/vehicle', async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
     const body = await c.req.json();
+    console.log(body.name);
 
     try {
-        const admins = await prisma.admin.findMany()
+        const vehicle = await prisma.vehicle.create({
+            data: {
+                name: body.name,
+            }
+        })
+        c.status(200);
         return c.json({
-            admins
+            msg: 'Vehicle Added Successfully!'
         })
     } catch (e) {
         c.status(403)
         return c.json({
-            msg: 'Error while Signing In!'
+            msg: 'Error while Adding Vehicle!'
+        })
+    }
+})
+
+adminRouter.get('/vehicle', async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
+    try {
+        const vehicles = await prisma.vehicle.findMany({
+            select: {
+                name: true
+            }
+        })
+        c.status(200);
+        return c.json(vehicles)
+    } catch (e) {
+        c.status(403)
+        return c.json({
+            msg: 'Error while Fetching Vehicles!'
         })
     }
 })

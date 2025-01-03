@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css"; // Import calendar styles
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { useRequestData } from "@/context/BookingRequestContext";
 import axios from "axios";
 import { BACKEND_URL } from "@/config";
+import Loader from "./Loader";
 
 export default function DateTime() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -12,6 +13,7 @@ export default function DateTime() {
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [bookedDates, setBookedDates] = useState<string[]>([]);
   const { requestData, setRequestData } = useRequestData();
+  const [loading, setLoading] = useState(false);
 
   const timeSlots = {
     slot: ["10:00 am to 02:00 pm", "02:00 pm to 06:00 pm", "06:00 pm to 10:00 pm"]
@@ -65,6 +67,7 @@ export default function DateTime() {
 
   const fetchBookedDates = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(`${BACKEND_URL}/api/v1/booking/booked-dates`);
 
       const allSlotsPerDay = 3;
@@ -77,7 +80,10 @@ export default function DateTime() {
         }
       }
       setBookedDates(bookedDates);
+      setLoading(false);
     } catch (error) {
+      setBookedDates([]);
+      setLoading(false);
       console.error("Error fetching booked slots", error);
     }
   };
@@ -93,12 +99,18 @@ export default function DateTime() {
     fetchBookedDates();
   }
     , []);
+
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
     <div>
       <div className="font-bold text-xl mb-5">Select Date & Time</div>
 
       {/* Calendar Component */}
       <div className="grid grid-cols-2">
+
         <div className="mb-5">
           <Calendar
             onChange={handleDateChange}
@@ -135,8 +147,8 @@ export default function DateTime() {
                           ? "bg-orange-50 border-orange-500"
                           : "hover:bg-gray-100"
                         }`}
-                      onClick={() => bookedSlots && !bookedSlots.includes(slot) && handleTimeSlotClick(slot)} // Only trigger click if the slot is not booked
-                      disabled={bookedSlots.includes(slot)} // Disable button if slot is booked
+                      onClick={() => bookedSlots && !bookedSlots.includes(slot) && handleTimeSlotClick(slot)}
+                      disabled={bookedSlots.includes(slot)}
                     >
                       {slot}
                     </button>

@@ -4,36 +4,23 @@ import { BACKEND_URL } from '@/config';
 
 const AddVehicle = () => {
     const [vehicleName, setVehicleName] = useState('');
-    const [image, setImage] = useState<File | null>(null);
-    const [error, setError] = useState('');
-
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            setImage(e.target.files[0]);
-        }
-    };
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!vehicleName || !image) {
-            setError('Please fill in all fields.');
+        if (vehicleName === '') {
+            setError('Vehicle Name cannot be empty');
             return;
         }
-
-        const formData = new FormData();
-        formData.append('vehicleName', vehicleName);
-        formData.append('image', image);
-
         try {
-            const response = await axios.post(`${BACKEND_URL}/api/v1/admin/vehicle`,
-                formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                }
+            const response = await axios.post(`${BACKEND_URL}/api/v1/admin/vehicle`, {
+                name: vehicleName
             });
             if (response.status === 200) {
                 setVehicleName('');
-                setImage(null);
+                setError('');
+                setSuccess(response.data.msg);
             }
         } catch (error) {
             console.error('Error adding vehicle:', error);
@@ -43,9 +30,8 @@ const AddVehicle = () => {
 
     return (
         <div className='flex h-screen justify-center items-center bg-slate-100'>
-            <div className="max-w-96 shadow-lg p-8 bg-white rounded-lg">
+            <div className="w-96 shadow-lg p-8 bg-white rounded-lg">
                 <h2 className="text-2xl font-bold mb-4 text-center">Add Vehicle</h2>
-                {error && <p className="text-red-500">{error}</p>}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label htmlFor="vehicleName" className="block text-sm font-medium">Vehicle Name</label>
@@ -58,18 +44,8 @@ const AddVehicle = () => {
                             required
                         />
                     </div>
-
-                    <div>
-                        <label htmlFor="image" className="block text-sm font-medium">Vehicle Image</label>
-                        <input
-                            type="file"
-                            id="image"
-                            onChange={handleImageChange}
-                            className="w-full border rounded-md p-2"
-                            accept="image/*"
-                            required
-                        />
-                    </div>
+                    {error && <p className="text-red-500 text-center">{error}</p>}
+                    {success && <p className="text-green-500 text-center">{success}</p>}
                     <button
                         type="submit"
                         className="w-full bg-blue-500 text-white py-2 rounded-md"
