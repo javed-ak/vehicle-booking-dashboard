@@ -16,7 +16,7 @@ export default function DateTime() {
   const [loading, setLoading] = useState(false);
 
   const timeSlots = {
-    slot: ["10:00 am to 02:00 pm", "02:00 pm to 06:00 pm", "06:00 pm to 10:00 pm"]
+    slot: ["12:00 am to 4:00 am", "4:00 am to 8:00 am", "8:00 am to 12:00 pm", "12:00 am to 04:00 pm", "04:00 pm to 08:00 pm", "08:00 pm to 12:00 am"]
   };
 
   const updateDateTimeInContext = (date: Date | null, time: string | null) => {
@@ -131,8 +131,8 @@ export default function DateTime() {
         </div>
 
         {/* Time Slots */}
-        <div>
-          <div className="font-bold text-lg mb-2">Time Slot</div>
+        <div className="ml-4  h-72 overflow-auto border p-2 scrollable-div">
+          <div className="font-bold text-lg mb-2 text-center">Time Slot</div>
           <div className="flex flex-col gap-4">
             {Object.entries(timeSlots).map(([period, slots]) => (
               <div key={period}>
