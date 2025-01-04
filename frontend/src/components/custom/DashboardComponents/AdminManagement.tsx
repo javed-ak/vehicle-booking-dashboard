@@ -7,6 +7,8 @@ import axios from 'axios';
 import { BACKEND_URL } from "@/config";
 import Loader from "../Loader";
 import { Button } from "@/components/ui/button";
+import { Trash2Icon } from "lucide-react";
+import { toast, ToastContainer } from "react-toastify";
 
 export default function AdminManagement() {
     // @ts-ignore
@@ -62,8 +64,39 @@ export default function AdminManagement() {
         }
     };
 
+    const handleDelete = async (id: string) => {
+        try {
+            const response = await axios.delete(`${BACKEND_URL}/api/v1/admin/${id}`);
+            if (response.status === 200) {
+                toast.success("Admin Deleted Successfully", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
+                window.location.reload();
+            }
+        } catch (error) {
+            toast.error("Error Deleting Admin", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+
+        }
+    }
+
     return (
         <div className="p-6 overflow-y-auto flex-grow">
+            <ToastContainer />
             {/* Booking Requests */}
             <Card>
                 <CardHeader>
@@ -76,11 +109,14 @@ export default function AdminManagement() {
                 </CardHeader>
                 <CardContent>
                     {loading ? <Loader /> : <div className="space-y-4 text-lg">
-                        {adminData.map((admin: any) => (
-                            <div
+                        {adminData.map((admin: any, index: number) => (
+                            <div key={index}
                                 className="flex justify-between items-center px-4 py-2 border-b border-gray-200"
                             >{admin.name}
                                 <p className="text-slate-400 text-md">{admin.email}</p>
+                                <Trash2Icon className="text-red-500 cursor-pointer"
+                                    onClick={() => handleDelete(admin.id)}
+                                />
                             </div>
                         ))}
                     </div>}

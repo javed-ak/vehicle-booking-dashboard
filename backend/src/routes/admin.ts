@@ -95,7 +95,8 @@ adminRouter.get('/', async (c) => {
         const admins = await prisma.admin.findMany({
             select: {
                 name: true,
-                email: true
+                email: true,
+                id: true
             }
         })
         c.status(200);
@@ -108,13 +109,36 @@ adminRouter.get('/', async (c) => {
     }
 })
 
+adminRouter.delete('/:id', async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
+    const id = c.req.param("id");
+    try {
+        const admin = await prisma.admin.delete({
+            where: {
+                id: id
+            }
+        })
+        c.status(200);
+        return c.json({
+            msg: 'Admin Deleted Successfully!'
+        })
+    } catch (e) {
+        c.status(403)
+        return c.json({
+            msg: 'Error while Deleting Admin!'
+        })
+    }
+})
+
 adminRouter.post('/vehicle', async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate())
 
     const body = await c.req.json();
-    console.log(body.name);
 
     try {
         const vehicle = await prisma.vehicle.create({
@@ -142,7 +166,8 @@ adminRouter.get('/vehicle', async (c) => {
     try {
         const vehicles = await prisma.vehicle.findMany({
             select: {
-                name: true
+                name: true,
+                id: true
             }
         })
         c.status(200);
@@ -151,6 +176,31 @@ adminRouter.get('/vehicle', async (c) => {
         c.status(403)
         return c.json({
             msg: 'Error while Fetching Vehicles!'
+        })
+    }
+})
+
+adminRouter.delete('/vehicle/:id', async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
+    const id = c.req.param("id");
+
+    try {
+        const vehicle = await prisma.vehicle.delete({
+            where: {
+                id: id
+            }
+        })
+        c.status(200);
+        return c.json({
+            msg: 'Vehicle Deleted Successfully!'
+        })
+    } catch (e) {
+        c.status(403)
+        return c.json({
+            msg: 'Error while Deleting Vehicle!'
         })
     }
 })

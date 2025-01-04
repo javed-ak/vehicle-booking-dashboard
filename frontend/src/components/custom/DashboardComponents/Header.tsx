@@ -1,7 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { useRequests } from "@/hooks";
-import { Bell, LogOut, Settings, User } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 // Admin user details
@@ -13,7 +12,7 @@ const adminUser = {
 };
 
 export default function Header() {
-    const { loading, requests } = useRequests();
+    // const { loading, requests } = useRequests();
 
     const navigate = useNavigate();
     const handleLogout = () => {
@@ -25,7 +24,7 @@ export default function Header() {
         <div className="bg-white shadow-sm p-4 flex justify-between items-center">
             <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
             <div className="flex items-center space-x-4">
-                <div className="relative">
+                {/* <div className="relative">
                     <Bell
                         className={`h-6 w-6 ${requests > 0 ? 'text-orange-400 animate-bounce' : 'text-gray-500'}`}
                     />
@@ -34,7 +33,7 @@ export default function Header() {
                             {requests}
                         </span>
                     )}
-                </div>
+                </div> */}
 
                 {/* Admin Profile Dropdown */}
                 <DropdownMenu>
@@ -46,12 +45,11 @@ export default function Header() {
                             </AvatarFallback>
                         </Avatar>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56">
+                    <DropdownMenuContent className="w-56 mr-4">
                         <DropdownMenuLabel>
                             <div className="flex flex-col text-center">
                                 <span className="font-medium">{adminUser.name}</span>
                                 <span className="text-xs text-gray-500">{adminUser.email}</span>
-
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />

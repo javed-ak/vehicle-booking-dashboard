@@ -4,6 +4,7 @@ import { withAccelerate } from "@prisma/extension-accelerate";
 import { bookingRequestInput, updateBookingRequestInput } from '@javed-ak/booking-inputs';
 import * as XLSX from "xlsx";
 import { parse, format } from 'date-fns';
+import { da } from "date-fns/locale";
 
 // sgMail.setApiKey(import.meta.env.VITE_SENDGRID_API_KEY);
 
@@ -250,38 +251,44 @@ bookingRouter.get('/report', async (c) => {
     }).$extends(withAccelerate())
 
     try {
-        const bookings = await prisma.bookingRequest.findMany();
+        const bookings = await prisma.bookingRequest.findMany({
+            select: {
+                id: true,
+                vehicle: true,
+                dateTime: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                phone: true,
+                pickup: true,
+                dropoff: true,
+                status: true,
+            },
+        });
 
-        // Format data for Excel
         const formattedData = bookings.map((booking) => ({
-            ID: booking.id,
-            Vehicle: booking.vehicle,
-            Date_Time: booking.dateTime,
-            First_Name: booking.firstName,
-            Last_Name: booking.lastName,
-            Email: booking.email,
-            Phone: booking.phone,
-            Pickup: booking.pickup,
-            Dropoff: booking.dropoff,
-            Note: booking.note,
-            Status: booking.status,
+            ID: booking.id || '',
+            Vehicle: booking.vehicle || '',
+            Date_Time: booking.dateTime || '',
+            First_Name: booking.firstName || '',
+            Last_Name: booking.lastName || '',
+            Email: booking.email || '',
+            Phone: booking.phone || '',
+            Pickup: booking.pickup || '',
+            Dropoff: booking.dropoff || '',
+            Status: booking.status || ''
         }));
 
-        // Create a new workbook and add the data
         const worksheet = XLSX.utils.json_to_sheet(formattedData);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Bookings");
+        const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
 
-        // Convert the workbook to a buffer
-        const buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
-        return c.json({
-            buffer
-        })
-        // Set the response headers for file download
-        // c.res.headers.set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        // c.res.headers.set("Content-Disposition", 'attachment; filename="Booking_Report.xlsx"');
-        // c.res.body = buffer;
-        // return c;
+        c.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        c.header('Content-Disposition', 'attachment; filename="Booking_Report.xlsx"');
+
+
+        return c.body(buffer);
     } catch (error) {
         return c.json({ error: "Failed to generate report" });
     }

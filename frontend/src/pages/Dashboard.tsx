@@ -6,7 +6,7 @@ import DashboardContent from '@/components/custom/DashboardComponents/DashboardC
 import Header from '@/components/custom/DashboardComponents/Header';
 import AdminManagement from '@/components/custom/DashboardComponents/AdminManagement';
 import axios from 'axios';
-import AddVehicle from '@/components/custom/DashboardComponents/AddVehicle';
+import AddVehicle from '@/components/custom/DashboardComponents/VehicleManagement';
 import Loader from '@/components/custom/Loader';
 import { useNavigate } from 'react-router-dom';
 
@@ -23,19 +23,29 @@ const BookingDashboard = () => {
   }, []);
 
   function handleDownloadReport() {
-    axios.get("http://localhost:8787/api/v1/booking/report")
+    axios.get("http://localhost:8787/api/v1/booking/report", { responseType: 'arraybuffer' })
       .then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
+
+        const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+        const url = window.URL.createObjectURL(blob);
+
         const link = document.createElement("a");
+
         link.href = url;
-        link.setAttribute("download", "Booking_Report.xlsx"); // Set the file name
+        link.setAttribute("download", "Booking_Report.xlsx");
+
         document.body.appendChild(link);
+
         link.click();
-        link.remove();
+
+        document.body.removeChild(link);
+
       })
       .catch((error) => {
         console.error("Error downloading the report:", error);
       });
+
   }
 
   const [slide, setSlide] = useState(1)

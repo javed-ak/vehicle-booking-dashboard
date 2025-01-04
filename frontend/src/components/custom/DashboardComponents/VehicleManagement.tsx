@@ -8,6 +8,8 @@ import axios from 'axios';
 import { BACKEND_URL } from "@/config";
 import Loader from "../Loader";
 import { Button } from "@/components/ui/button";
+import { Trash2Icon } from "lucide-react";
+import { toast, ToastContainer } from "react-toastify";
 
 export default function VehicleManagement() {
     // @ts-ignore
@@ -41,6 +43,7 @@ export default function VehicleManagement() {
                 setVehicleName('');
                 setError('');
                 setSuccess(response.data.msg);
+                window.location.reload();
             }
         } catch (error) {
             console.error('Error adding vehicle:', error);
@@ -48,9 +51,41 @@ export default function VehicleManagement() {
         }
     };
 
+    const handleDelete = async (id: string) => {
+        try {
+            const response = await axios.delete(`${BACKEND_URL}/api/v1/admin/vehicle/${id}`);
+            if (response.status === 200) {
+                toast.success("Admin Deleted Successfully", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000);
+            }
+        } catch (error) {
+            toast.error("Error Deleting Admin", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+
+        }
+    }
+
     return (
         <div className="p-6 overflow-y-auto flex-grow">
             {/* Booking Requests */}
+            <ToastContainer />
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center justify-between">
@@ -66,6 +101,9 @@ export default function VehicleManagement() {
                             <div
                                 className="flex justify-between items-center px-4 py-2 border-b border-gray-200"
                             >{vehicle.name}
+                                <Trash2Icon className="text-red-500 cursor-pointer"
+                                    onClick={() => handleDelete(vehicle.id)}
+                                />
                             </div>
                         ))}
                     </div>}
