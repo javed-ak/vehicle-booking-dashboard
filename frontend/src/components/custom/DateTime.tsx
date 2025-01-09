@@ -8,18 +8,42 @@ import { BACKEND_URL } from "@/config";
 import Loader from "./Loader";
 
 export default function DateTime() {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [selectedSlots, setSelectedSlots] = useState<number[]>([]);
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [bookedDates, setBookedDates] = useState<string[]>([]);
   const { requestData, setRequestData } = useRequestData();
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const timeSlots = {
-    slot: ["12:00 am to 4:00 am", "4:00 am to 8:00 am", "8:00 am to 12:00 pm", "12:00 am to 04:00 pm", "04:00 pm to 08:00 pm", "08:00 pm to 12:00 am"]
-  };
+  const timeSlots = [
+    "12:00 am to 1:00 am",
+    "1:00 am to 2:00 am",
+    "2:00 am to 3:00 am",
+    "3:00 am to 4:00 am",
+    "4:00 am to 5:00 am",
+    "5:00 am to 6:00 am",
+    "6:00 am to 7:00 am",
+    "7:00 am to 8:00 am",
+    "8:00 am to 9:00 am",
+    "9:00 am to 10:00 am",
+    "10:00 am to 11:00 am",
+    "11:00 am to 12:00 pm",
+    "12:00 pm to 1:00 pm",
+    "1:00 pm to 2:00 pm",
+    "2:00 pm to 3:00 pm",
+    "3:00 pm to 4:00 pm",
+    "4:00 pm to 5:00 pm",
+    "5:00 pm to 6:00 pm",
+    "6:00 pm to 7:00 pm",
+    "7:00 pm to 8:00 pm",
+    "8:00 pm to 9:00 pm",
+    "9:00 pm to 10:00 pm",
+    "10:00 pm to 11:00 pm",
+    "11:00 pm to 12:00 am",
+  ]
 
-  const updateDateTimeInContext = (date: Date | null, time: string | null) => {
+  const updateDateTimeInContext = (date: Date | null, time: string) => {
     if (date && time) {
       const formattedDateTime = `${format(date, "MMMM dd, yyyy")} - ${time}`;
       setRequestData((prev: any) => ({
@@ -27,8 +51,23 @@ export default function DateTime() {
         dateTime: formattedDateTime, // Save formatted date-time string
       }));
     }
-
   };
+
+  const handleSetSlots = () => {
+    if (selectedSlots.length > 3) {
+      if (isContinuous()) {
+        const formattedSlots = `${timeSlots[selectedSlots[0]].slice(0, 8)} to ${timeSlots[selectedSlots[selectedSlots.length - 1]].slice(11, 18)}`;
+        // @ts-ignore
+        updateDateTimeInContext(selectedDate, formattedSlots);
+        setError("")
+      } else {
+        setError("Please select continuous slots");
+      }
+    }
+    else {
+      setError("Please select atleast 4 slots");
+    }
+  }
 
   const handleDateChange = (date: Date) => {
     setSelectedDate(date);
@@ -36,17 +75,34 @@ export default function DateTime() {
     fetchBookedSlots(date);
   };
 
-  const handleTimeSlotClick = (time: string) => {
-    setSelectedTime(time);
-    updateDateTimeInContext(selectedDate, time);
+  const handleTimeSlotClick = (index: number) => {
+    if (selectedSlots.includes(index)) {
+      setSelectedSlots(selectedSlots.filter((s) => s !== index));
+    }
+    else {
+      setSelectedSlots((prev) => [...prev, index]);
+    }
+    setSelectedSlots((cur) => cur.sort());
   };
 
-  const getSelectedDateTimeString = () => {
-    if (selectedDate && selectedTime) {
-      return `${format(selectedDate, "MMMM dd, yyyy")} - ${selectedTime}`;
+  const isContinuous = () => {
+    if (selectedSlots.length > 1) {
+      for (let i = 0; i < selectedSlots.length - 1; i++) {
+        if (selectedSlots[i + 1] - selectedSlots[i] !== 1) {
+          return false;
+        }
+      }
+      return true;
     }
-    return "No date and time selected";
+    return false;
   };
+
+  // const getSelectedDateTimeString = () => {
+  //   if (selectedDate && selectedTime) {
+  //     return `${format(selectedDate, "MMMM dd, yyyy")} - ${selectedTime}`;
+  //   }
+  //   return "No date and time selected";
+  // };
 
   const fetchBookedSlots = async (date: Date) => {
     try {
@@ -70,7 +126,7 @@ export default function DateTime() {
       setLoading(true);
       const response = await axios.get(`${BACKEND_URL}/api/v1/booking/booked-dates`);
 
-      const allSlotsPerDay = 3;
+      const allSlotsPerDay = 24;
       const bookedDates = [];
 
       for (const [date, slots] of Object.entries(response.data)) {
@@ -134,32 +190,35 @@ export default function DateTime() {
         <div className="ml-4  h-72 overflow-auto border p-2 scrollable-div">
           <div className="font-bold text-lg mb-2 text-center">Time Slot</div>
           <div className="flex flex-col gap-4">
-            {Object.entries(timeSlots).map(([period, slots]) => (
-              <div key={period}>
-                <div className="flex flex-col gap-2">
-                  {slots.map((slot) => (
-                    <button
-                      key={slot}
-                      className={`border p-3 rounded-lg transition-all ${bookedSlots.includes(slot)
-                        ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-                        // Disable booked slot
-                        : selectedTime === slot
-                          ? "bg-orange-50 border-orange-500"
-                          : "hover:bg-gray-100"
-                        }`}
-                      onClick={() => bookedSlots && !bookedSlots.includes(slot) && handleTimeSlotClick(slot)}
-                      disabled={bookedSlots.includes(slot)}
-                    >
-                      {slot}
-                    </button>
-                  ))}
-                </div>
-              </div>
+            {timeSlots.map((slot, index) => (
+              <button
+                key={index}
+                className={`border p-3 rounded-lg transition-all ${bookedSlots.includes(slot)
+                  ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                  : selectedSlots.includes(index)
+                    ? "bg-orange-50 border-orange-500"
+                    : "hover:bg-gray-100"
+                  }`}
+                onClick={() => bookedSlots && !bookedSlots.includes(slot) && handleTimeSlotClick(index)}
+                disabled={bookedSlots.includes(slot)}
+              >
+                {slot}
+              </button>
             ))}
           </div>
         </div>
       </div>
-
+      <div className="flex justify-between mt-5">
+        <button
+          className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded"
+          onClick={handleSetSlots}
+        >
+          Set Date and Time
+        </button>
+        <div>
+          {error && <p className="text-red-500 mr-8 text-lg mt-1">{error}</p>}
+        </div>
+      </div>
       {/* Selected Date & Time */}
       <div className="mt-5">
         <div className="font-bold text-lg">Selected Date & Time:</div>

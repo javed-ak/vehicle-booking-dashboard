@@ -30,6 +30,7 @@ model BookingRequest {
   phone     String
   pickup    String
   dropoff   String
+  prepTime  Int?    @default(0)
   note      String?
   status    String  @default("Pending")
 

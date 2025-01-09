@@ -3,10 +3,35 @@ import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { bookingRequestInput, updateBookingRequestInput } from '@javed-ak/booking-inputs';
 import * as XLSX from "xlsx";
-import { parse, format } from 'date-fns';
-import { da } from "date-fns/locale";
 
 // sgMail.setApiKey(import.meta.env.VITE_SENDGRID_API_KEY);
+
+const timeSlots = [
+    "12:00 am to 1:00 am",
+    "1:00 am to 2:00 am",
+    "2:00 am to 3:00 am",
+    "3:00 am to 4:00 am",
+    "4:00 am to 5:00 am",
+    "5:00 am to 6:00 am",
+    "6:00 am to 7:00 am",
+    "7:00 am to 8:00 am",
+    "8:00 am to 9:00 am",
+    "9:00 am to 10:00 am",
+    "10:00 am to 11:00 am",
+    "11:00 am to 12:00 pm",
+    "12:00 pm to 1:00 pm",
+    "1:00 pm to 2:00 pm",
+    "2:00 pm to 3:00 pm",
+    "3:00 pm to 4:00 pm",
+    "4:00 pm to 5:00 pm",
+    "5:00 pm to 6:00 pm",
+    "6:00 pm to 7:00 pm",
+    "7:00 pm to 8:00 pm",
+    "8:00 pm to 9:00 pm",
+    "9:00 pm to 10:00 pm",
+    "10:00 pm to 11:00 pm",
+    "11:00 pm to 12:00 am",
+]
 
 export const bookingRouter = new Hono<{
     Bindings: {
@@ -24,11 +49,7 @@ bookingRouter.post('/', async (c) => {
 
     const body = await c.req.json();
     const { success } = bookingRequestInput.safeParse(body);
-    const { dateTime } = body;
-    const [date, slot] = dateTime.split(' - '); // Splitting date and slot
-    const dateObject = new Date(date);
-    dateObject.setHours(dateObject.getHours() + 5);       // Add 5 hours
-    dateObject.setMinutes(dateObject.getMinutes() + 30);
+
 
     if (!success) {
         c.status(403);
@@ -51,15 +72,6 @@ bookingRouter.post('/', async (c) => {
                 note: body.note
             }
         })
-
-        await prisma.bookedSlot.create({
-            data: {
-                bookingRequestId: request.id,
-                date: dateObject,  // Store the date as Date object
-                slot: slot         // Store the time slot
-            }
-        });
-
 
         const adminEmail = c.env.ADMIN_EMAIL;
         const userEmail = body.email;
@@ -176,7 +188,7 @@ bookingRouter.put('/', async (c) => {
     }).$extends(withAccelerate())
 
     const body = await c.req.json();
-    const { success } = updateBookingRequestInput.safeParse(body);
+    // const { success } = updateBookingRequestInput.safeParse(body);
 
     // if(!success) {
     //     c.status(403);
@@ -198,26 +210,49 @@ bookingRouter.put('/', async (c) => {
                 phone: body.phone,
                 pickup: body.pickup,
                 dropoff: body.dropoff,
+                prepTime: body.prepTime,
                 note: body.note,
                 status: body.status
+            }, select: {
+                id: true,
+                dateTime: true,
+                prepTime: true,
             }
         })
 
-        if (body.status === 'Rejected') {
-            const bookingSlot = await prisma.bookedSlot.findFirst({
-                where: {
-                    bookingRequestId: body.id
-                }, select: {
-                    id: true
+        if (body.status === 'Accepted') {
+            const { dateTime } = request;
+            let [date, slot] = dateTime.split(' - '); // Splitting date and slot
+            const dateObject = new Date(date);
+            let start = 0;
+            for (let i = 0; i < timeSlots.length; i++) {
+                if (timeSlots[i].slice(0, 8) === slot.slice(0, 8)) {
+                    start = i;
+                    break;
                 }
-            })
+            }
+            let end = 0;
 
-            await prisma.bookedSlot.delete({
-                where: {
-                    id: bookingSlot?.id
+            for (let i = 0; i < timeSlots.length; i++) {
+                if (timeSlots[i].slice(11, 18) === slot.slice(12, 19)) {
+                    end = i;
+                    break;
                 }
-            })
+            }
+            end += (request.prepTime ? request.prepTime + 1 : 0);
+            dateObject.setHours(dateObject.getHours() + 5);
+            dateObject.setMinutes(dateObject.getMinutes() + 30);
 
+            for (let i = start; i < end; i++) {
+                const s = timeSlots[i];
+                await prisma.bookedSlot.create({
+                    data: {
+                        bookingRequestId: request.id,
+                        date: dateObject,  // Store the date as Date object
+                        slot: s         // Store the time slot
+                    }
+                });
+            }
         }
         return c.json({
             id: request.id
@@ -319,6 +354,7 @@ bookingRouter.get('/booked-dates', async (c) => {
             acc[dateString].push(current.slot); // Push the slot to the date group
             return acc;
         }, {});
+
         return c.json(groupedByDate);
 
     } catch (error) {

@@ -14,6 +14,7 @@ interface Booking {
   phone: string;
   pickup: string;
   dropoff: string;
+  prepTime?: number,
   note?: string;
 }
 
@@ -118,11 +119,11 @@ export const useDashboard = () => {
   };
 
   // Handle booking status change (Accept/Reject)
-  const handleBookingAction = async (id: string, status: string) => {
+  const handleBookingAction = async (id: string, status: string, prepTime: number) => {
     try {
       const response = await axios.put(
         `${BACKEND_URL}/api/v1/booking`,
-        { id, status },
+        { id, status, prepTime },
         {
           headers: {
             Authorization: localStorage.getItem("token"),

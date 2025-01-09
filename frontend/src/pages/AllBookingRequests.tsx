@@ -11,14 +11,15 @@ export default function AllBookingRequests() {
     // States for filtering
     const [vehicleFilter, setVehicleFilter] = useState<string>("");
     const [searchQuery, setSearchQuery] = useState<string>("");
-
-    // State for the selected booking (for popup and edit)
     const [selectedBooking, setSelectedBooking] = useState(null);
+    const [prepTime, setPrepTime] = useState<string>("0");
+    // State for the selected booking (for popup and edit)
     const [isEditing, setIsEditing] = useState(false); // State to track edit mode
 
     // Editable fields state
     const [editableFields, setEditableFields] = useState({
         dateTime: "",
+        prepTime: 0,
     });
 
     // Pagination state
@@ -53,10 +54,17 @@ export default function AllBookingRequests() {
 
     // Handle input change for editable fields
     const handleFieldChange = (e) => {
-        setEditableFields({
-            ...editableFields,
-            [e.target.name]: e.target.value,
-        });
+        if (e.target.name === "prepTime") {
+            setEditableFields({
+                ...editableFields,
+                [e.target.name]: parseInt(e.target.value),
+            });
+        } else {
+            setEditableFields({
+                ...editableFields,
+                [e.target.name]: e.target.value,
+            });
+        }
     };
 
     // Save the updated data to the database
@@ -66,11 +74,13 @@ export default function AllBookingRequests() {
             toast.success("Request saved successfully!");
             setIsEditing(false); // Exit edit mode
             setSelectedBooking(null); // Close the modal
+            setPrepTime("0");
         }
     };
 
-    const handleAction = async (id, action) => {
-        await handleBookingAction(id, action);
+    const handleAction = async (id, action, prepTime) => {
+        setPrepTime("0");
+        await handleBookingAction(id, action, parseInt(prepTime));
         toast.success(`Booking ${action.toLowerCase()} successfully!`);
         setSelectedBooking(null);
     };
@@ -123,8 +133,14 @@ export default function AllBookingRequests() {
                                 key={request.id}
                                 className="flex justify-between items-center p-4 my-4 bg-gray-100 rounded cursor-pointer"
                                 onClick={() => {
+                                    // @ts-ignore
                                     setSelectedBooking(request);
-                                    setEditableFields({ dateTime: request.dateTime }); // Set editable fields
+                                    setPrepTime(String(request.prepTime));
+                                    setEditableFields({
+                                        dateTime: request.dateTime,
+                                        // @ts-ignore
+                                        prepTime: request.prepTime
+                                    }); // Set editable fields
                                 }}
                             >
                                 <div>
@@ -264,6 +280,25 @@ export default function AllBookingRequests() {
                             )}
                         </div>
                         <div>
+                            <strong>Preparation Time : </strong>
+                            {isEditing ? (
+                                <input
+                                    type="text"
+                                    id="prepTime"
+                                    name="prepTime"
+                                    className="mt-1 p-2 block w-full border border-gray-300 rounded"
+                                    // @ts-ignore
+                                    value={prepTime}
+                                    onChange={(e) => {
+                                        setPrepTime(e.target.value)
+                                        handleFieldChange(e)
+                                    }}
+                                />
+                            ) : (
+                                selectedBooking.prepTime
+                            )}
+                        </div>
+                        <div>
                             <strong>Status:</strong> {selectedBooking.status}
                         </div>
                         <div>
@@ -280,7 +315,7 @@ export default function AllBookingRequests() {
                                                 variant="outline"
                                                 size="sm"
                                                 className="text-green-500 border-green-500 hover:bg-green-50"
-                                                onClick={() => handleAction(selectedBooking.id, "Accepted")}
+                                                onClick={() => handleAction(selectedBooking.id, "Accepted", prepTime)}
                                             >
                                                 Accept
                                             </Button>
