@@ -64,6 +64,10 @@ adminRouter.post('/signin', async (c) => {
             where: {
                 email: body.email,
                 password: body.password
+            }, select: {
+                id: true,
+                name: true,
+                email: true,
             }
         })
 
@@ -75,8 +79,12 @@ adminRouter.post('/signin', async (c) => {
         }
 
         const token = await sign({ id: user.id }, c.env.JWT_SECRET)
-        return c.text(
-            'Bearer ' + token
+        return c.json(
+            {
+                token: 'Bearer ' + token,
+                name: user.name,
+                email: user.email
+            }
         )
     } catch (e) {
         c.status(403)

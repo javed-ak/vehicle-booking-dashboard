@@ -6,6 +6,7 @@ import { useRequestData } from "@/context/BookingRequestContext";
 import axios from "axios";
 import { BACKEND_URL } from "@/config";
 import Loader from "./Loader";
+import { useShowNext } from "@/context/showNextContext";
 
 export default function DateTime() {
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -15,6 +16,7 @@ export default function DateTime() {
   const { requestData, setRequestData } = useRequestData();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { setShowNext } = useShowNext();
 
   const timeSlots = [
     "12:00 am to 1:00 am",
@@ -50,6 +52,11 @@ export default function DateTime() {
         ...prev,
         dateTime: formattedDateTime, // Save formatted date-time string
       }));
+      setError("");
+      setShowNext({ show: true });
+    }
+    else {
+      setError("Please select date");
     }
   };
 
@@ -59,7 +66,6 @@ export default function DateTime() {
         const formattedSlots = `${timeSlots[selectedSlots[0]].slice(0, 8)} to ${timeSlots[selectedSlots[selectedSlots.length - 1]].slice(11, 18)}`;
         // @ts-ignore
         updateDateTimeInContext(selectedDate, formattedSlots);
-        setError("")
       } else {
         setError("Please select continuous slots");
       }
@@ -153,6 +159,11 @@ export default function DateTime() {
 
   useEffect(() => {
     fetchBookedDates();
+    if (requestData.dateTime === "")
+      setShowNext({ show: false });
+    else
+      setShowNext({ show: true });
+
   }
     , []);
 
@@ -187,9 +198,11 @@ export default function DateTime() {
         </div>
 
         {/* Time Slots */}
-        <div className="ml-4  h-72 overflow-auto border p-2 scrollable-div">
-          <div className="font-bold text-lg mb-2 text-center">Time Slot</div>
-          <div className="flex flex-col gap-4">
+        <div className="ml-4 relative border p-2 h-72">
+          <div className="font-bold text-lg mb-2 text-center sticky top-0 ">
+            Time Slot
+          </div>
+          <div className="flex flex-col gap-2 h-60 overflow-auto ">
             {timeSlots.map((slot, index) => (
               <button
                 key={index}
@@ -208,21 +221,24 @@ export default function DateTime() {
           </div>
         </div>
       </div>
-      <div className="flex justify-between mt-5">
+      <div className="flex justify-center mt-5">
+
+        <div>
+          {error && <p className="text-red-500 mr-8 text-lg mt-1">{error}</p>}
+        </div>
+      </div>
+      {/* Selected Date & Time */}
+      <div className="mt-5 flex justify-between">
+        <div>
+          <div className="font-bold text-lg">Selected Date & Time:</div>
+          <div className="text-gray-700">{requestData.dateTime ? requestData.dateTime : 'No date and time selected'}</div>
+        </div>
         <button
           className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded"
           onClick={handleSetSlots}
         >
           Set Date and Time
         </button>
-        <div>
-          {error && <p className="text-red-500 mr-8 text-lg mt-1">{error}</p>}
-        </div>
-      </div>
-      {/* Selected Date & Time */}
-      <div className="mt-5">
-        <div className="font-bold text-lg">Selected Date & Time:</div>
-        <div className="text-gray-700">{requestData.dateTime ? requestData.dateTime : 'No date and time selected'}</div>
       </div>
 
       <style jsx>{`

@@ -2,24 +2,27 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useUserData } from "@/context/userContext";
 
 // Admin user details
-const adminUser = {
-    name: 'Javed Akhtar',
-    email: 'javedakhtar@gmail.com',
-    role: 'Super Admin',
-    avatar: '/path/to/avatar.jpg'
-};
+// const adminUser = {
+//     name: 'Javed Akhtar',
+//     email: 'javedakhtar@gmail.com',
+//     role: 'Super Admin',
+//     avatar: '/path/to/avatar.jpg'
+// };
 
 export default function Header() {
     // const { loading, requests } = useRequests();
 
     const navigate = useNavigate();
     const handleLogout = () => {
-        localStorage.removeItem('token');
+        localStorage.clear();
         navigate('/signin')
-    };
 
+    };
+    const name = localStorage.getItem('name') || "";
+    const email = localStorage.getItem('email');
     return (
         <div className="bg-white shadow-sm p-4 flex justify-between items-center">
             <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
@@ -39,25 +42,22 @@ export default function Header() {
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Avatar className="cursor-pointer">
-                            <AvatarImage src={adminUser.avatar} alt={adminUser.name} />
+                            {/* <AvatarImage src={name} alt={name.name} /> */}
                             <AvatarFallback className="bg-orange-400 text-white">
-                                {adminUser.name.split(' ').map(name => name[0]).join('')}
+                                {name.split(' ').map(name => name[0]).join('')}
                             </AvatarFallback>
                         </Avatar>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56 mr-4">
                         <DropdownMenuLabel>
                             <div className="flex flex-col text-center">
-                                <span className="font-medium">{adminUser.name}</span>
-                                <span className="text-xs text-gray-500">{adminUser.email}</span>
+                                <span className="font-medium">{name}</span>
+                                <span className="text-xs text-gray-500">{email}</span>
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-
-
-                        <DropdownMenuSeparator />
                         <DropdownMenuItem
-                            className="text-red-600 focus:text-red-600"
+                            className="text-red-600 focus:text-red-600 flex justify-center"
                             onClick={handleLogout}
                         >
                             <LogOut className="mr-2 h-4 w-4" />

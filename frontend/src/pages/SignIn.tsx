@@ -7,9 +7,12 @@ import axios from 'axios'
 import { useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
 import { toast, ToastContainer } from 'react-toastify';
+import { UserDataProvider } from "@/context/userContext";
+import { useUserData } from "@/context/userContext";
 
-export default function SignIn() {
+function SignInComponent() {
   const [loading, setLoading] = useState(false)
+  // const { userData, setUserData } = useUserData(); 
   const [signinInput, setSigninInput] = useState<SigninInput>({
     email: '',
     password: ''
@@ -20,8 +23,10 @@ export default function SignIn() {
     setLoading(true);
     try {
       const response = await axios.post(`${BACKEND_URL}/api/v1/admin/signin`, signinInput)
-      const jwt = response.data
+      const jwt = response.data.token
       localStorage.setItem('token', jwt)
+      localStorage.setItem('name', response.data.name);
+      localStorage.setItem('email', response.data.email);
       setLoading(false);
       navigate('/dashboard')
     } catch (e) {
@@ -74,3 +79,12 @@ export default function SignIn() {
     </div>
   )
 }
+
+
+export default function SignIn() {
+  return (
+    <UserDataProvider>
+      <SignInComponent />
+    </UserDataProvider>
+  )
+};

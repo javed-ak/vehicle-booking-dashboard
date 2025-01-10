@@ -2,15 +2,15 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 
 // Define the shape of the request data
 interface RequestData {
-    vehicle:    string;
-    dateTime:   string;
-    firstName:  string;
-    lastName:   string;
-    email:      string;
-    phone:      string;
-    pickup:     string;
-    dropoff:    string
-    note:       string;
+    vehicle: string;
+    dateTime: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    pickup: string;
+    dropoff: string
+    note: string;
 }
 
 // Define the context value type

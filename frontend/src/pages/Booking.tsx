@@ -1,4 +1,6 @@
 import FormSection from "@/components/custom/FormSection";
+import Header from "@/components/custom/Header";
+import Footer from "@/components/custom/Footer";
 
 export default function Booking() {
   return (
@@ -7,7 +9,9 @@ export default function Booking() {
         <h1 className="text-5xl font-medium">Book An Appointment</h1>
         <div>Home</div>
       </div>
+      <Header />
       <FormSection />
+      <Footer />
     </div>
   )
 }

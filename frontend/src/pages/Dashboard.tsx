@@ -9,6 +9,7 @@ import axios from 'axios';
 import AddVehicle from '@/components/custom/DashboardComponents/VehicleManagement';
 import Loader from '@/components/custom/Loader';
 import { useNavigate } from 'react-router-dom';
+import { UserDataProvider } from '@/context/userContext';
 
 const BookingDashboard = () => {
   const { requests } = useRequests();
@@ -113,4 +114,10 @@ const BookingDashboard = () => {
   )
 };
 
-export default BookingDashboard;
+export default function BookingDashboardComponent() {
+  return (
+    <UserDataProvider>
+      <BookingDashboard />
+    </UserDataProvider>
+  );
+}

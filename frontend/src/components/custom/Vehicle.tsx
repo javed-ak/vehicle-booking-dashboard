@@ -1,17 +1,27 @@
 import { useRequestData } from "@/context/BookingRequestContext";
 import { useVehicle } from "@/hooks";
 import Loader from "./Loader";
-
+import { useShowNext } from "@/context/showNextContext";
+import { useEffect } from "react";
 export default function Vehicle() {
   const { requestData, setRequestData } = useRequestData();
-
+  const { setShowNext } = useShowNext();
   const handleVehicleSelection = (vehicle: string) => {
+    setShowNext({ show: true });
     setRequestData({
       ...requestData,
       vehicle,
     });
   };
   const { loading, vehicles } = useVehicle();
+
+  useEffect(() => {
+    if (!requestData.vehicle)
+      setShowNext({ show: false });
+    else
+      setShowNext({ show: true });
+  }
+    , []);
 
   return (
     <div>

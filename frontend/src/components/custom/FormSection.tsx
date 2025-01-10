@@ -1,6 +1,6 @@
 import { Car, CalendarDays, FileText, FileCheck, ArrowRight, ArrowLeft, Loader } from 'lucide-react';
 import Vehicle from './Vehicle';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DateTime from './DateTime';
 import BasicDetails from './BasicDetails';
 import Summary from './Summary';
@@ -10,9 +10,13 @@ import { BACKEND_URL } from '@/config';
 import axios from 'axios';
 import RequestSuccess from './RequestSuccess';
 import { toast, ToastContainer } from 'react-toastify';
+import { ShowNextProvider, useShowNext } from '@/context/showNextContext';
 
 function FormSectionContent() {
   const { requestData } = useRequestData(); // Ensure this is within the provider
+  const { show } = useShowNext().showNext;
+
+  const [showRequestButton, setShowRequestButton] = useState(false);
   const [selectedCard, setSeletedCard] = useState(1);
   const [loading, setLoading] = useState(true);
 
@@ -37,6 +41,14 @@ function FormSectionContent() {
     }
   };
 
+  useEffect(() => {
+    if (requestData.vehicle && requestData.dateTime && requestData.lastName && requestData.firstName && requestData.email && requestData.phone && requestData.dropoff && requestData.pickup) {
+      setShowRequestButton(true)
+    }
+    else
+      setShowRequestButton(false)
+  }
+    , [requestData]);
   return (
     <div className="mx-40 my-20 grid grid-cols-4 gap-10">
       <div>
@@ -102,7 +114,9 @@ function FormSectionContent() {
                     <ArrowLeft />
                     Go Back
                   </Button>
-                  <Button onClick={sendRequest}>Send Request</Button>
+                  <Button onClick={sendRequest}
+                    disabled={!showRequestButton}
+                  >Send Request</Button>
                 </div>
               ) : (
                 <div className="flex gap-5">
@@ -112,7 +126,10 @@ function FormSectionContent() {
                       Go Back
                     </Button>
                   )}
-                  <Button onClick={() => setSeletedCard(selectedCard + 1)}>
+                  <Button
+                    onClick={() => setSeletedCard(selectedCard + 1)}
+                    disabled={!show}
+                  >
                     Next
                     <ArrowRight />
                   </Button>
@@ -129,7 +146,9 @@ function FormSectionContent() {
 export default function FormSection() {
   return (
     <RequestDataProvider>
-      <FormSectionContent />
+      <ShowNextProvider>
+        <FormSectionContent />
+      </ShowNextProvider>
     </RequestDataProvider>
   );
 }
