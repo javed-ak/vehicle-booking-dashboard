@@ -325,7 +325,19 @@ export default function AllBookingRequests() {
                                                 className="text-blue-500 border-blue-500 hover:bg-blue-50"
                                                 onClick={() => setIsEditing(true)}
                                             >
-                                                Edit
+                                                Modify
+                                            </Button>
+                                        </>
+                                    )}
+                                    {selectedBooking.status === "Accepted" && (
+                                        <>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="text-blue-500 border-blue-500 hover:bg-blue-50"
+                                                onClick={() => setIsEditing(true)}
+                                            >
+                                                Modify
                                             </Button>
                                         </>
                                     )}

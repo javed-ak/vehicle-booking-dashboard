@@ -36,8 +36,8 @@ export default function Vehicle() {
                 <div
                   key={index}
                   className={`border p-5 rounded-lg flex gap-3 items-center cursor-pointer transition-all ${requestData.vehicle === vehicle.name
-                    ? "border-orange-500 bg-orange-500 text-white"
-                    : "hover:border-orange-500 hover:shadow-lg"
+                    ? "border-orangeColor bg-orangeColor text-white"
+                    : "hover:border-orangeColor hover:shadow-lg"
                     }`}
                   onClick={() => handleVehicleSelection(vehicle.name)}
                 >

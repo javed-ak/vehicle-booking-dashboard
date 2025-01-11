@@ -54,28 +54,28 @@ function FormSectionContent() {
       <div>
         <div className="border rounded-lg w-full shadow-lg">
           <div
-            className={`m-2 py-2 px-4 rounded-lg hover:text-orange-500 cursor-pointer flex items-center gap-4 hover:scale-105 transition-all ${selectedCard === 1 && 'bg-orange-500 text-white hover:text-white hover:scale-100'
-              }`}
+            className={`m-2 py-2 px-4 rounded-lg flex items-center gap-4 cursor-pointer ${selectedCard === 1 ? 'bg-orangeColor text-white' : 'hover:text-orangeColor hover:scale-105 transition-all'
+            }`}
             onClick={() => setSeletedCard(1)}
           >
             <Car />Vehicle
           </div>
           <div
-            className={`m-2 py-2 px-4 rounded-lg hover:text-orange-500 cursor-pointer flex items-center gap-4 hover:scale-105 transition-all ${selectedCard === 2 && 'bg-orange-500 text-white hover:text-white hover:scale-100'
-              }`}
+            className={`m-2 py-2 px-4 rounded-lg flex items-center gap-4 cursor-pointer ${selectedCard === 2 ? 'bg-orangeColor text-white' : 'hover:text-orangeColor hover:scale-105 transition-all'
+            }`}
             onClick={() => setSeletedCard(2)}
           >
             <CalendarDays />Date & Time
           </div>
           <div
-            className={`m-2 py-2 px-4 rounded-lg hover:text-orange-500 cursor-pointer flex items-center gap-4 hover:scale-105 transition-all ${selectedCard === 3 && 'bg-orange-500 text-white hover:text-white hover:scale-100'
-              }`}
+            className={`m-2 py-2 px-4 rounded-lg flex items-center gap-4 cursor-pointer ${selectedCard === 3 ? 'bg-orangeColor text-white' : 'hover:text-orangeColor hover:scale-105 transition-all'
+            }`}
             onClick={() => setSeletedCard(3)}
           >
             <FileText />Basic Details
           </div>
           <div
-            className={`m-2 py-2 px-4 rounded-lg hover:text-orange-500 cursor-pointer flex items-center gap-4 hover:scale-105 transition-all ${selectedCard === 4 && 'bg-orange-500 text-white hover:text-white hover:scale-100'
+            className={`m-2 py-2 px-4 rounded-lg flex items-center gap-4 cursor-pointer ${selectedCard === 4 ? 'bg-orangeColor text-white' : 'hover:text-orangeColor hover:scale-105 transition-all'
               }`}
             onClick={() => setSeletedCard(4)}
           >

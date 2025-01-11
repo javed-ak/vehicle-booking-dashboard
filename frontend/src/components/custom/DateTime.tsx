@@ -7,6 +7,7 @@ import axios from "axios";
 import { BACKEND_URL } from "@/config";
 import Loader from "./Loader";
 import { useShowNext } from "@/context/showNextContext";
+import { Button } from "../ui/button";
 
 export default function DateTime() {
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -201,6 +202,7 @@ export default function DateTime() {
         <div className="ml-4 relative border p-2 h-72">
           <div className="font-bold text-lg mb-2 text-center sticky top-0 ">
             Time Slot
+            <div className="text-xs text-red-500 font-light">Minimum 4 slot booking acceptable*</div>
           </div>
           <div className="flex flex-col gap-2 h-60 overflow-auto ">
             {timeSlots.map((slot, index) => (
@@ -209,7 +211,7 @@ export default function DateTime() {
                 className={`border p-3 rounded-lg transition-all ${bookedSlots.includes(slot)
                   ? "bg-gray-300 text-gray-700 cursor-not-allowed"
                   : selectedSlots.includes(index)
-                    ? "bg-orange-50 border-orange-500"
+                    ? "bg-orange-50 border-orangeColor"
                     : "hover:bg-gray-100"
                   }`}
                 onClick={() => bookedSlots && !bookedSlots.includes(slot) && handleTimeSlotClick(index)}
@@ -224,7 +226,7 @@ export default function DateTime() {
       <div className="flex justify-center mt-5">
 
         <div>
-          {error && <p className="text-red-500 mr-8 text-lg mt-1">{error}</p>}
+          {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
         </div>
       </div>
       {/* Selected Date & Time */}
@@ -233,22 +235,22 @@ export default function DateTime() {
           <div className="font-bold text-lg">Selected Date & Time:</div>
           <div className="text-gray-700">{requestData.dateTime ? requestData.dateTime : 'No date and time selected'}</div>
         </div>
-        <button
-          className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded"
+        <Button
+          className="bg-orangeColor hover:hoverOrange text-white font-bold py-2 px-4 rounded"
           onClick={handleSetSlots}
         >
-          Set Date and Time
-        </button>
+          Confirm Date & Time
+        </Button>
       </div>
 
       <style jsx>{`
         .current-date {
-          background-color: #ffae4a !important;
+          background-color:rgb(226, 119, 104) !important;
           color: white !important;
           border-radius: 10%;
         }
         .selected-date {
-          background-color: #F87315 !important;
+          background-color: #E95440 !important;
           color: white !important;
           border-radius: 10%;
         }
