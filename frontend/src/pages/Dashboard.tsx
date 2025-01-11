@@ -70,12 +70,14 @@ const BookingDashboard = () => {
           <div className="mr-3"><LayoutDashboard /></div>
           <span className="flex-grow">Dashboard</span>
         </div>
-        <div className={`flex items-center p-3 rounded cursor-pointer active:bg-zinc-700 text-white hover:bg-zinc-500`} onClick={() => {
-          setSlide(2);
-        }}>
+        <div className={`flex items-center p-3 rounded cursor-pointer active:bg-zinc-700 text-white hover:bg-zinc-500`}
+          onClick={() => {
+            setSlide(2);
+          }}>
           <div className="mr-3"><CalendarCheck /></div>
           <span className="flex-grow">Booking Requests</span>
-          <span className="bg-red-500 text-white rounded-full px-2 py-1 text-xs">
+          <span className={`bg-red-500 text-white rounded-full px-2 py-1 text-xs
+          ${slide !== 2 ? 'block' : 'hidden'}`}>
             {requests}
           </span>
         </div>

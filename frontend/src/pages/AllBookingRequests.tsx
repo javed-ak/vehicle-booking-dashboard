@@ -128,7 +128,7 @@ export default function AllBookingRequests() {
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
-                        {filteredData.map((request) => (
+                        {currentData.map((request) => (
                             <div
                                 key={request.id}
                                 className="flex justify-between items-center p-4 my-4 bg-gray-100 rounded cursor-pointer"

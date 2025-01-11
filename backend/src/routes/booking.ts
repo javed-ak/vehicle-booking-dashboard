@@ -272,7 +272,8 @@ bookingRouter.get('/bulk', async (c) => {
 
     const bookings = await prisma.bookingRequest.findMany({
         orderBy: {
-            dateTime: 'desc'
+            createdAt: 'desc',
+            // dateTime: 'desc'
         }
     });
     return c.json({
@@ -289,6 +290,7 @@ bookingRouter.get('/report', async (c) => {
         const bookings = await prisma.bookingRequest.findMany({
             select: {
                 id: true,
+                createdAt: true,
                 vehicle: true,
                 dateTime: true,
                 firstName: true,
@@ -299,6 +301,9 @@ bookingRouter.get('/report', async (c) => {
                 dropoff: true,
                 status: true,
             },
+            orderBy: {
+                createdAt: 'desc'
+            }
         });
 
         const formattedData = bookings.map((booking) => ({

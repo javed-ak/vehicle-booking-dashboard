@@ -67,7 +67,7 @@ function SignInComponent() {
         </div>
         <div className="flex flex-col gap-2">
           <label>Password</label>
-          <Input type="password" required onChange={(e) => {
+          <Input type={"password"} required onChange={(e) => {
             setSigninInput(c => ({
               ...c,
               password: e.target.value

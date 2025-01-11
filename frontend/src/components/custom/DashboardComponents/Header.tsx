@@ -1,9 +1,10 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUserData } from "@/context/userContext";
-
+import { Bell } from "lucide-react";
+import { useRequests } from "@/hooks";
 // Admin user details
 // const adminUser = {
 //     name: 'Javed Akhtar',
@@ -13,7 +14,7 @@ import { useUserData } from "@/context/userContext";
 // };
 
 export default function Header() {
-    // const { loading, requests } = useRequests();
+    const { requests } = useRequests();
 
     const navigate = useNavigate();
     const handleLogout = () => {
@@ -27,16 +28,16 @@ export default function Header() {
         <div className="bg-white shadow-sm p-4 flex justify-between items-center">
             <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
             <div className="flex items-center space-x-4">
-                {/* <div className="relative">
+                <div className="relative">
                     <Bell
-                        className={`h-6 w-6 ${requests > 0 ? 'text-orange-400 animate-bounce' : 'text-gray-500'}`}
+                        className={`h-8 w-8 ${requests > 0 ? 'text-orange-400 animate-bounce' : 'text-gray-500'}`}
                     />
                     {requests > 0 && (
-                        <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full px-2 py-1 text-xs">
+                        <span className="absolute -top-2 -right-1 bg-red-500 text-white rounded-full px-1 text-[10px]">
                             {requests}
                         </span>
                     )}
-                </div> */}
+                </div>
 
                 {/* Admin Profile Dropdown */}
                 <DropdownMenu>

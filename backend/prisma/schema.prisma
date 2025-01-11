@@ -33,7 +33,7 @@ model BookingRequest {
   prepTime  Int?    @default(0)
   note      String?
   status    String  @default("Pending")
-
+  createdAt DateTime @default(now())
   BookedSlot BookedSlot[]
 }
 
