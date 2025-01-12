@@ -1,25 +1,28 @@
 {
   "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy --minify"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.js"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "@javed-ak/booking-inputs": "^1.0.6",
-    "@prisma/client": "^6.2.1",
-    "@prisma/extension-accelerate": "^1.2.1",
-    "@types/formidable": "^3.4.5",
+    "cors": "^2.8.5",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
     "exceljs": "^4.4.0",
-    "formidable": "^3.5.2",
-    "fs": "^0.0.1-security",
-    "hono": "^4.6.15",
-    "xlsx": "^0.18.5"
-  },
-  "devDependencies": {
-    "@cloudflare/workers-types": "^4.20241112.0",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.1",
     "prisma": "^6.2.1",
-    "wrangler": "^3.88.0"
+    "uuid": "^11.0.5",
+    "xlsx": "^0.18.5"
   }
 }

@@ -55,21 +55,21 @@ function FormSectionContent() {
         <div className="border rounded-lg w-full shadow-lg">
           <div
             className={`m-2 py-2 px-4 rounded-lg flex items-center gap-4 cursor-pointer ${selectedCard === 1 ? 'bg-orangeColor text-white' : 'hover:text-orangeColor hover:scale-105 transition-all'
-            }`}
+              }`}
             onClick={() => setSeletedCard(1)}
           >
             <Car />Vehicle
           </div>
           <div
             className={`m-2 py-2 px-4 rounded-lg flex items-center gap-4 cursor-pointer ${selectedCard === 2 ? 'bg-orangeColor text-white' : 'hover:text-orangeColor hover:scale-105 transition-all'
-            }`}
+              }`}
             onClick={() => setSeletedCard(2)}
           >
             <CalendarDays />Date & Time
           </div>
           <div
             className={`m-2 py-2 px-4 rounded-lg flex items-center gap-4 cursor-pointer ${selectedCard === 3 ? 'bg-orangeColor text-white' : 'hover:text-orangeColor hover:scale-105 transition-all'
-            }`}
+              }`}
             onClick={() => setSeletedCard(3)}
           >
             <FileText />Basic Details

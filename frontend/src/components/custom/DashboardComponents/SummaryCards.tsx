@@ -4,7 +4,7 @@ import { CalendarCheck, CheckCircle, XCircle } from 'lucide-react'
 
 export default function SummaryCards() {
     const { loading, dashboardData } = useDashboard();
-    
+
     // Calculate summary statistics
     const totalBookings = dashboardData.length;
     const approvedBookings = dashboardData.filter(req => req.status === 'Accepted').length;

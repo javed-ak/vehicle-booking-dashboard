@@ -41,7 +41,9 @@ export const useBooking = ({ id }: { id: string }) => {
       bookingData
     }
   } catch (e) {
-    navigate('/signin')
+    // navigate('/signin')
+    console.log(e);
+
   }
 }
 
@@ -69,7 +71,7 @@ export const useAdmin = () => {
       adminData
     }
   } catch (e) {
-    navigate('/signin')
+    // navigate('/signin')
   }
 }
 
@@ -86,11 +88,11 @@ export const useDashboard = () => {
         },
       })
       .then((response) => {
-        setDashboardData(response.data.bookings); // TypeScript now knows what type this is
+        setDashboardData(response.data); // TypeScript now knows what type this is
         setLoading(false);
       })
       .catch(() => {
-        navigate("/signin");
+        // navigate("/signin");
       });
   }, []);
 
@@ -163,7 +165,7 @@ export const useVehicle = () => {
         setLoading(false);
       })
       .catch(() => {
-        navigate("/signin");
+        // navigate("/signin");
       });
   }, []);
 
@@ -186,7 +188,7 @@ export const useRequests = () => {
         setLoading(false);
       })
       .catch(() => {
-        navigate("/signin");
+        // navigate("/signin");
       });
   }, []);
 

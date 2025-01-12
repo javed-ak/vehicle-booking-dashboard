@@ -20,7 +20,6 @@ export default function Header() {
     const handleLogout = () => {
         localStorage.clear();
         navigate('/signin')
-
     };
     const name = localStorage.getItem('name') || "";
     const email = localStorage.getItem('email');
