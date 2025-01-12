@@ -199,12 +199,12 @@ export default function DateTime() {
         </div>
 
         {/* Time Slots */}
-        <div className="ml-4 relative border p-2 h-72">
+        <div className="ml-4 relative border p-2 h-72 rounded-lg">
           <div className="font-bold text-lg mb-2 text-center sticky top-0 ">
             Time Slot
             <div className="text-xs text-red-500 font-light">Minimum 4 slot booking acceptable*</div>
           </div>
-          <div className="flex flex-col gap-2 h-60 overflow-auto ">
+          <div className="flex flex-col gap-2 h-56 overflow-auto ">
             {timeSlots.map((slot, index) => (
               <button
                 key={index}
