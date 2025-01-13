@@ -24,11 +24,13 @@ function SignInComponent() {
     try {
       const response = await axios.post(`${BACKEND_URL}/api/v1/admin/signin`, signinInput)
       const jwt = response.data.token
-      localStorage.setItem('token', jwt)
-      localStorage.setItem('name', response.data.name);
-      localStorage.setItem('email', response.data.email);
       setLoading(false);
-      navigate('/dashboard')
+      if (response.status === 200) {
+        localStorage.setItem('token', jwt)
+        localStorage.setItem('name', response.data.name);
+        localStorage.setItem('email', response.data.email);
+        navigate('/dashboard')
+      }
     } catch (e) {
       toast.error("Email or password are Wrong", {
         position: "top-right",

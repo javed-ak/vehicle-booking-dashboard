@@ -5,28 +5,28 @@ import { bookingRequestInput } from '@javed-ak/booking-inputs';
 import * as XLSX from "xlsx";
 
 const timeSlots = [
-    "12:00 am to 1:00 am",
-    "1:00 am to 2:00 am",
-    "2:00 am to 3:00 am",
-    "3:00 am to 4:00 am",
-    "4:00 am to 5:00 am",
-    "5:00 am to 6:00 am",
-    "6:00 am to 7:00 am",
-    "7:00 am to 8:00 am",
-    "8:00 am to 9:00 am",
-    "9:00 am to 10:00 am",
+    "12:00 am to 01:00 am",
+    "01:00 am to 02:00 am",
+    "02:00 am to 03:00 am",
+    "03:00 am to 04:00 am",
+    "04:00 am to 05:00 am",
+    "05:00 am to 06:00 am",
+    "06:00 am to 07:00 am",
+    "07:00 am to 08:00 am",
+    "08:00 am to 09:00 am",
+    "09:00 am to 10:00 am",
     "10:00 am to 11:00 am",
     "11:00 am to 12:00 pm",
-    "12:00 pm to 1:00 pm",
-    "1:00 pm to 2:00 pm",
-    "2:00 pm to 3:00 pm",
-    "3:00 pm to 4:00 pm",
-    "4:00 pm to 5:00 pm",
-    "5:00 pm to 6:00 pm",
-    "6:00 pm to 7:00 pm",
-    "7:00 pm to 8:00 pm",
-    "8:00 pm to 9:00 pm",
-    "9:00 pm to 10:00 pm",
+    "12:00 pm to 01:00 pm",
+    "01:00 pm to 02:00 pm",
+    "02:00 pm to 03:00 pm",
+    "03:00 pm to 04:00 pm",
+    "04:00 pm to 05:00 pm",
+    "05:00 pm to 06:00 pm",
+    "06:00 pm to 07:00 pm",
+    "07:00 pm to 08:00 pm",
+    "08:00 pm to 09:00 pm",
+    "09:00 pm to 10:00 pm",
     "10:00 pm to 11:00 pm",
     "11:00 pm to 12:00 am",
 ]
@@ -195,16 +195,18 @@ router.put('/', async (req, res) => {
 `;
 
         const request = await client.query(query, values);
-
         const bookingid = request.rows[0].id;
+
         if (body.status === 'Accepted') {
             const dateTime = request.rows[0].dateTime;
             let [date, slot] = dateTime.split(' - ');
             // Splitting date and slot
             const dateObject = new Date(date);
             let start = 0;
+
+
             for (let i = 0; i < timeSlots.length; i++) {
-                if (timeSlots[i].slice(0, 6) === slot.slice(0, 6)) {
+                if (timeSlots[i].slice(0, 8) === slot.slice(0, 8)) {
                     start = i;
                     break;
                 }
@@ -212,7 +214,164 @@ router.put('/', async (req, res) => {
             let end = 0;
 
             for (let i = 0; i < timeSlots.length; i++) {
-                if (timeSlots[i].slice(11, 18) === slot.slice(11, 18)) {
+                if (timeSlots[i].slice(12, 20) === slot.slice(12, 20)) {
+                    end = i;
+                    break;
+                }
+            }
+            end += (request.rows[0].prepTime ? request.rows[0].prepTime + 1 : 0);
+            dateObject.setHours(dateObject.getHours() + 5);
+            dateObject.setMinutes(dateObject.getMinutes() + 30);
+
+            for (let i = start; i < end; i++) {
+                const timeSlot = timeSlots[i];
+                const bid = uuidv4();
+                const val = [bid, bookingid, dateObject, timeSlot];
+                const query = `
+                INSERT INTO "booked_slots"
+                VALUES ($1, $2, $3,$4)
+                RETURNING *;
+            `;
+                await client.query(query, val);
+            }
+
+            const userEmail = request.rows[0].email;
+            const sendgridApiKey = process.env.SENDGRID_API_KEY;
+
+            const userEmailPayload = {
+                personalizations: [
+                    {
+                        to: [{ email: userEmail }],
+                        subject: "Booking Request Received",
+                    },
+                ],
+                from: { email: "noreply@yourdomain.com" }, // Replace with your verified sender email
+                content: [
+                    {
+                        type: "text/html",
+                        value: `
+                        <p>Dear ${request.rows[0].firstName}</p>
+                        <p>Thank you for choosing Black Vans Transportation. Your booking has been accepted below are the booking details.</p>
+                        <p>Booking Details:</p>
+                        <ul>
+                            <li><strong>Name:</strong> ${request.rows[0].firstName} ${request.rows[0].lastName}</li>
+                            <li><strong>Email:</strong> ${request.rows[0].email}</li>
+                            <li><strong>Phone Number:</strong> ${request.rows[0].phone}</li>
+                            <li><strong>Vehicle:</strong> ${request.rows[0].vehicle}</li>
+                            <li><strong>Pickup Location:</strong> ${request.rows[0].pickup}</li>
+                            <li><strong>Drop-off Location:</strong> ${request.rows[0].dropoff}</li>
+                            <li><strong>Date & Time:</strong> ${request.rows[0].dateTime}</li>
+                            <li><strong>Note:</strong> ${request.rows[0].note}</li>
+                        </ul>
+                        <br>
+                        <p>Best regards,</p>
+                        <p>Customer Care</p>
+                        <p>Black Vans Transporation</p>
+                        <p>+1 657-389-3470 | sales@blackvans.com</p>
+                        <p>www.blackvans.com</p>`,
+                    },
+                ],
+            };
+
+            const sendEmail = async (payload) => {
+                const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${sendgridApiKey}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                if (!response.ok) {
+                    console.error("Failed to send email:", await response.text());
+                }
+            };
+
+            await Promise.all([
+                sendEmail(userEmailPayload),
+            ]);
+        }
+
+        if (body.status === "Rejected") {
+            const query = `
+            DELETE FROM "booked_slots"
+            WHERE "bookingRequestId" = $1;
+        `;
+            await client.query(query, [bookingid]);
+
+
+            const userEmail = request.rows[0].email;
+            const sendgridApiKey = process.env.SENDGRID_API_KEY;
+
+            const userEmailPayload = {
+                personalizations: [
+                    {
+                        to: [{ email: userEmail }],
+                        subject: "Booking Request Received",
+                    },
+                ],
+                from: { email: "noreply@yourdomain.com" }, // Replace with your verified sender email
+                content: [
+                    {
+                        type: "text/html",
+                        value: `
+                        <p>Dear ${request.rows[0].firstName}</p>
+                        <p>Thank you for choosing Black Vans Transportation. We regret to inform you that your booking request on ${request.rows[0].dateTime} has been rejected at this time.
+                        This could be due to a variety of reasons, such as availability or other requirements. We apologize for any inconvenience this may cause. If you need any further assistance or have any questions, please don't hesitate to reach out to our support team. We hope to serve you in the future. </p>
+                        
+                        <br>
+                        <p>Best regards,</p>
+                        <p>Customer Care</p>
+                        <p>Black Vans Transporation</p>
+                        <p>+1 657-389-3470 | sales@blackvans.com</p>
+                        <p>www.blackvans.com</p>`,
+                    },
+                ],
+            };
+
+            const sendEmail = async (payload) => {
+                const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${sendgridApiKey}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                if (!response.ok) {
+                    console.error("Failed to send email:", await response.text());
+                }
+            };
+
+            await Promise.all([
+                sendEmail(userEmailPayload),
+            ]);
+        }
+
+        if (request.rows[0].status === 'Accepted' && body.prepTime) {
+            const query = `
+            DELETE FROM "booked_slots"
+            WHERE "bookingRequestId" = $1;
+        `;
+            await client.query(query, [bookingid]);
+            const dateTime = request.rows[0].dateTime;
+            let [date, slot] = dateTime.split(' - ');
+            // Splitting date and slot
+            const dateObject = new Date(date);
+            let start = 0;
+
+            for (let i = 0; i < timeSlots.length; i++) {
+                if (timeSlots[i].slice(0, 8) === slot.slice(0, 8)) {
+                    start = i;
+                    break;
+                }
+            }
+            let end = 0;
+
+            for (let i = 0; i < timeSlots.length; i++) {
+                if (timeSlots[i].slice(12, 20) === slot.slice(12, 20)) {
                     end = i;
                     break;
                 }

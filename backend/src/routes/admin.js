@@ -37,14 +37,14 @@ router.post('/signin', async (req, res) => {
         const { success } = signinInput.safeParse(body);
 
         if (!success) {
-            return res.json({
+            return res.status(403).json({
                 error: 'Inputs are not correct'
             })
         }
 
         const admin = await client.query(`SELECT * FROM "Admin" WHERE email='${body.email}' AND password='${body.password}'`);
         if (admin.rows.length === 0) {
-            return res.json({
+            return res.status(403).json({
                 error: 'Email or Password was wrong!'
             })
         }

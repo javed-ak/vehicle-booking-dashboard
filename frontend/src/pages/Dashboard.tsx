@@ -10,7 +10,7 @@ import AddVehicle from '@/components/custom/DashboardComponents/VehicleManagemen
 import Loader from '@/components/custom/Loader';
 import { useNavigate } from 'react-router-dom';
 import { UserDataProvider } from '@/context/userContext';
-
+import { BACKEND_URL } from "@/config";
 const BookingDashboard = () => {
   const { requests } = useRequests();
   const { loading, dashboardData } = useDashboard();
@@ -24,7 +24,7 @@ const BookingDashboard = () => {
   }, []);
 
   function handleDownloadReport() {
-    axios.get("http://localhost:8787/api/v1/booking/report", { responseType: 'arraybuffer' })
+    axios.get(`${BACKEND_URL}/api/v1/booking/report`, { responseType: 'arraybuffer' })
       .then((response) => {
 
         const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -77,7 +77,7 @@ const BookingDashboard = () => {
           <div className="mr-3"><CalendarCheck /></div>
           <span className="flex-grow">Booking Requests</span>
           <span className={`bg-red-500 text-white rounded-full px-2 py-1 text-xs
-          ${slide !== 2 ? 'block' : 'hidden'}`}>
+          ${slide === 2 || requests == 0 ? 'hidden' : 'block'}`}>
             {requests}
           </span>
         </div>

@@ -55,7 +55,7 @@ export default function VehicleManagement() {
         try {
             const response = await axios.delete(`${BACKEND_URL}/api/v1/admin/vehicle/${id}`);
             if (response.status === 200) {
-                toast.success("Admin Deleted Successfully", {
+                toast.success("Vechicle Deleted Successfully", {
                     position: "top-right",
                     autoClose: 3000,
                     hideProgressBar: false,

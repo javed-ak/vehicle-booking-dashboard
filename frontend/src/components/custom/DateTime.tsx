@@ -20,28 +20,28 @@ export default function DateTime() {
   const { setShowNext } = useShowNext();
 
   const timeSlots = [
-    "12:00 am to 1:00 am",
-    "1:00 am to 2:00 am",
-    "2:00 am to 3:00 am",
-    "3:00 am to 4:00 am",
-    "4:00 am to 5:00 am",
-    "5:00 am to 6:00 am",
-    "6:00 am to 7:00 am",
-    "7:00 am to 8:00 am",
-    "8:00 am to 9:00 am",
-    "9:00 am to 10:00 am",
+    "12:00 am to 01:00 am",
+    "01:00 am to 02:00 am",
+    "02:00 am to 03:00 am",
+    "03:00 am to 04:00 am",
+    "04:00 am to 05:00 am",
+    "05:00 am to 06:00 am",
+    "06:00 am to 07:00 am",
+    "07:00 am to 08:00 am",
+    "08:00 am to 09:00 am",
+    "09:00 am to 10:00 am",
     "10:00 am to 11:00 am",
     "11:00 am to 12:00 pm",
-    "12:00 pm to 1:00 pm",
-    "1:00 pm to 2:00 pm",
-    "2:00 pm to 3:00 pm",
-    "3:00 pm to 4:00 pm",
-    "4:00 pm to 5:00 pm",
-    "5:00 pm to 6:00 pm",
-    "6:00 pm to 7:00 pm",
-    "7:00 pm to 8:00 pm",
-    "8:00 pm to 9:00 pm",
-    "9:00 pm to 10:00 pm",
+    "12:00 pm to 01:00 pm",
+    "01:00 pm to 02:00 pm",
+    "02:00 pm to 03:00 pm",
+    "03:00 pm to 04:00 pm",
+    "04:00 pm to 05:00 pm",
+    "05:00 pm to 06:00 pm",
+    "06:00 pm to 07:00 pm",
+    "07:00 pm to 08:00 pm",
+    "08:00 pm to 09:00 pm",
+    "09:00 pm to 10:00 pm",
     "10:00 pm to 11:00 pm",
     "11:00 pm to 12:00 am",
   ]
@@ -64,7 +64,7 @@ export default function DateTime() {
   const handleSetSlots = () => {
     if (selectedSlots.length > 3) {
       if (isContinuous()) {
-        const formattedSlots = `${timeSlots[selectedSlots[0]].slice(0, 8)} to ${timeSlots[selectedSlots[selectedSlots.length - 1]].slice(11, 18)}`;
+        const formattedSlots = `${timeSlots[selectedSlots[0]].slice(0, 8)} to ${timeSlots[selectedSlots[selectedSlots.length - 1]].slice(12, 20)}`;
         // @ts-ignore
         updateDateTimeInContext(selectedDate, formattedSlots);
       } else {
