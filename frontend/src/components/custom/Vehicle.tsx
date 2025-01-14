@@ -41,7 +41,7 @@ export default function Vehicle() {
                     }`}
                   onClick={() => handleVehicleSelection(vehicle.name)}
                 >
-                  <div className="text-2xl font-bold border rounded-full h-14 w-14 flex justify-center items-center border-orangeColor">
+                  <div className={`text-2xl font-bold bg-orangeColor text-white rounded-full h-14 w-14 flex justify-center items-center ${requestData.vehicle === vehicle.name && "text-orangeColor bg-white"}`}>
                     {index + 1}
                   </div>
                   <div className="font-bold text-lg">{vehicle.name}</div>
