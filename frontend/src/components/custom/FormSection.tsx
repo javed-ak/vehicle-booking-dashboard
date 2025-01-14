@@ -50,7 +50,7 @@ function FormSectionContent() {
   }
     , [requestData]);
   return (
-    <div className="mx-40 my-20 grid grid-cols-4 gap-10">
+    <div className="lg:grid grid-cols-4 gap-10">
       <div>
         <div className="border rounded-lg w-full shadow-lg">
           <div

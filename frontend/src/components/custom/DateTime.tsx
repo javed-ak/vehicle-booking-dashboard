@@ -177,7 +177,7 @@ export default function DateTime() {
       <div className="font-bold text-xl mb-5">Select Date & Time</div>
 
       {/* Calendar Component */}
-      <div className="grid grid-cols-2">
+      <div className="lg:grid grid-cols-2">
 
         <div className="mb-5">
           <Calendar
@@ -199,8 +199,8 @@ export default function DateTime() {
         </div>
 
         {/* Time Slots */}
-        <div className="ml-4 relative border p-2 h-72 rounded-lg">
-          <div className="font-bold text-lg mb-2 text-center sticky top-0 ">
+        <div className="lg:ml-4 relative border p-2 h-72 rounded-lg">
+          <div className="font-bold text-lg mb-2 text-center sticky top-0 bg-white">
             Time Slot
             <div className="text-xs text-red-500 font-light">Minimum 4 slot booking acceptable*</div>
           </div>
@@ -230,13 +230,13 @@ export default function DateTime() {
         </div>
       </div>
       {/* Selected Date & Time */}
-      <div className="mt-5 flex justify-between">
+      <div className="mt-5 lg:flex justify-between">
         <div>
           <div className="font-bold text-lg">Selected Date & Time:</div>
           <div className="text-gray-700">{requestData.dateTime ? requestData.dateTime : 'No date and time selected'}</div>
         </div>
         <Button
-          className="bg-orangeColor hover:hoverOrange text-white font-bold py-2 px-4 rounded"
+          className="mt-5 lg:mt-0"
           onClick={handleSetSlots}
         >
           Confirm Date & Time

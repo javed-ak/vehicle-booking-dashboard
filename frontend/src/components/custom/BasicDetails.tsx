@@ -33,7 +33,7 @@ export default function BasicDetails() {
       <div className="font-bold text-xl">Basic Details</div>
       <div className="mt-5">
         <form>
-          <div className="grid grid-cols-2 gap-5">
+          <div className="lg:grid grid-cols-2 gap-5 flex flex-col">
             <div className="flex flex-col gap-2">
               <label className="text-sm">First Name</label>
               <Input
