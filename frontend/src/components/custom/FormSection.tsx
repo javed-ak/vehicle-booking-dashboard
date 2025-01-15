@@ -52,7 +52,7 @@ function FormSectionContent() {
   return (
     <div className="lg:grid grid-cols-4 gap-10">
       <div>
-        <div className="border rounded-lg w-full shadow-lg">
+        <div className="border rounded-lg w-full shadow-lg mb-10">
           <div
             className={`m-2 py-2 px-4 rounded-lg flex items-center gap-4 cursor-pointer ${selectedCard === 1 ? 'bg-orangeColor text-white' : 'hover:text-orangeColor hover:scale-105 transition-all'
               }`}

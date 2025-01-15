@@ -63,7 +63,7 @@ router.post('/', async (req, res) => {
                     subject: "Booking Request Received",
                 },
             ],
-            from: { email: "noreply@yourdomain.com" }, // Replace with your verified sender email
+            from: { email: "javedakhtary15@gmail.com" }, // Replace with your verified sender email
             content: [
                 {
                     type: "text/html",
@@ -137,7 +137,7 @@ router.post('/', async (req, res) => {
             });
 
             if (!response.ok) {
-                console.error("Failed to send email:", await response.text());
+                // console.error("Failed to send email:", await response.text());
             }
         };
 
@@ -219,11 +219,11 @@ router.put('/', async (req, res) => {
                     break;
                 }
             }
-            end += (request.rows[0].prepTime ? request.rows[0].prepTime + 1 : 0);
+            end += (request.rows[0].prepTime);
             dateObject.setHours(dateObject.getHours() + 5);
             dateObject.setMinutes(dateObject.getMinutes() + 30);
 
-            for (let i = start; i < end; i++) {
+            for (let i = start; i <= end; i++) {
                 const timeSlot = timeSlots[i];
                 const bid = uuidv4();
                 const val = [bid, bookingid, dateObject, timeSlot];
@@ -245,7 +245,7 @@ router.put('/', async (req, res) => {
                         subject: "Booking Request Received",
                     },
                 ],
-                from: { email: "noreply@yourdomain.com" }, // Replace with your verified sender email
+                from: { email: "javedakhtary15@gmail.com" }, // Replace with your verified sender email
                 content: [
                     {
                         type: "text/html",
@@ -284,7 +284,7 @@ router.put('/', async (req, res) => {
                 });
 
                 if (!response.ok) {
-                    console.error("Failed to send email:", await response.text());
+                    // console.error("Failed to send email:", await response.text());
                 }
             };
 
@@ -311,7 +311,7 @@ router.put('/', async (req, res) => {
                         subject: "Booking Request Received",
                     },
                 ],
-                from: { email: "noreply@yourdomain.com" }, // Replace with your verified sender email
+                from: { email: "javedakhtary15@gmail.com" }, // Replace with your verified sender email
                 content: [
                     {
                         type: "text/html",
@@ -341,7 +341,7 @@ router.put('/', async (req, res) => {
                 });
 
                 if (!response.ok) {
-                    console.error("Failed to send email:", await response.text());
+                    // console.error("Failed to send email:", await response.text());
                 }
             };
 
@@ -376,11 +376,11 @@ router.put('/', async (req, res) => {
                     break;
                 }
             }
-            end += (request.rows[0].prepTime ? request.rows[0].prepTime + 1 : 0);
+            end += request.rows[0].prepTime;
             dateObject.setHours(dateObject.getHours() + 5);
             dateObject.setMinutes(dateObject.getMinutes() + 30);
 
-            for (let i = start; i < end; i++) {
+            for (let i = start; i <= end; i++) {
                 const timeSlot = timeSlots[i];
                 const bid = uuidv4();
                 const val = [bid, bookingid, dateObject, timeSlot];
