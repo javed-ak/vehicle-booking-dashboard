@@ -11,7 +11,9 @@ export default function Summary() {
           <div className="font-medium text-xs my-5 ">Customer</div>
         </div>
       <div className="flex flex-col text-center">
-        <div className="text-xl font-bold">{`${requestData.firstName} ${requestData.lastName}`}</div>
+        <div className="text-xl font-bold">{requestData.firstName} {requestData.lastName}</div>
+        <div>{requestData.email}</div>
+        <div>{requestData.phone}</div>
         <div className="font-bold">{requestData.vehicle}</div>
         <div>{requestData.dateTime}</div>
         <div className="flex flex-col lg:flex-row justify-between mt-5">

@@ -489,6 +489,8 @@ router.get('/booked-slots/:date', async (req, res) => {
                 error: 'Invalid date format.'
             });
         }
+        dateObject.setHours(dateObject.getHours() + 5);
+        dateObject.setMinutes(dateObject.getMinutes() + 30);
 
         const request = await client.query(
             'SELECT slot FROM "booked_slots" WHERE date = $1 ORDER BY slot;',
