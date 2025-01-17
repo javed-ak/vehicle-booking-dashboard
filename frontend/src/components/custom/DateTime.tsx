@@ -99,7 +99,7 @@ export default function DateTime() {
     } else {
       setSelectedSlots((prev) => [...prev, index]);
     }
-    setSelectedSlots((cur) => cur.sort());
+    setSelectedSlots((cur) => cur.sort((a, b) => a - b));
   };
 
   const isContinuous = () => {
@@ -185,7 +185,7 @@ export default function DateTime() {
     if (
       requestData.selectedDate &&
       selectedDate?.toDateString() ===
-        new Date(requestData.selectedDate).toDateString() &&
+      new Date(requestData.selectedDate).toDateString() &&
       JSON.stringify(selectedSlots) === JSON.stringify(requestData.selectedSlots)
     ) {
       setShowNext({ show: true }); // Enable "Next" button if no changes
@@ -241,13 +241,12 @@ export default function DateTime() {
             {timeSlots.map((slot, index) => (
               <button
                 key={index}
-                className={`border p-3 rounded-lg transition-all ${
-                  bookedSlots.includes(slot)
-                    ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-                    : selectedSlots.includes(index)
+                className={`border p-3 rounded-lg transition-all ${bookedSlots.includes(slot)
+                  ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                  : selectedSlots.includes(index)
                     ? "bg-orange-50 border-orangeColor"
                     : "hover:bg-gray-100"
-                }`}
+                  }`}
                 onClick={() =>
                   bookedSlots && !bookedSlots.includes(slot) && handleTimeSlotClick(index)
                 }

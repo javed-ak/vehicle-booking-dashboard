@@ -19,6 +19,8 @@ function FormSectionContent() {
   const [selectedCard, setSelectedCard] = useState(1);
   const [loading, setLoading] = useState(true);
 
+  const icons = [Car, CalendarDays, FileText, FileCheck];
+  
   const sendRequest = async () => {
     setSelectedCard(5); // Show the RequestSuccess component
     try {
@@ -44,21 +46,24 @@ function FormSectionContent() {
       <div>
         <div className="border rounded-lg w-full shadow-lg mb-10">
           {["Vehicle", "Date & Time", "Basic Details", "Summary"].map(
-            (label, index) => (
-              <div
-                key={index}
-                className={`m-2 py-2 px-4 rounded-lg flex items-center gap-4 cursor-pointer ${
-                  selectedCard === index + 1
-                    ? "bg-orangeColor text-white"
-                    : show && selectedCard >= index
-                    ? "hover:text-orangeColor hover:scale-105 transition-all"
-                    : "text-gray-400 cursor-not-allowed"
-                }`}
-                onClick={() => show && selectedCard >= index && setSelectedCard(index + 1)}
-              >
-                {label}
-              </div>
-            )
+            (label, index) => {
+              const Icon = icons[index]; // Get the corresponding icon component
+              return (
+                <div
+                  key={index}
+                  className={`m-2 py-2 px-4 rounded-lg flex items-center gap-4 cursor-pointer ${selectedCard === index + 1
+                      ? "bg-orangeColor text-white"
+                      : show && selectedCard >= index
+                        ? "hover:text-orangeColor hover:scale-105 transition-all"
+                        : "text-gray-400 cursor-not-allowed"
+                    }`}
+                  onClick={() => show && selectedCard >= index && setSelectedCard(index + 1)}
+                >
+                  <Icon className="w-5 h-5" /> {/* Render the icon */}
+                  {label}
+                </div>
+              );
+            }
           )}
         </div>
       </div>
