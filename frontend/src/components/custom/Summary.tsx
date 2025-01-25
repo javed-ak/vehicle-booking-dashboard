@@ -7,7 +7,7 @@ export default function Summary() {
     <div className="lg:m-20">
         <div className="flex flex-col justify-center items-center">
           <div className="font-bold text-xl">Summary</div>
-          <div className="font-medium text-md">Your appointment booking summary</div>
+          <div className="font-medium text-md">Your booking summary.</div>
           <div className="font-medium text-xs my-5 ">Customer</div>
         </div>
       <div className="flex flex-col text-center">

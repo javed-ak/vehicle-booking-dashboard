@@ -27,10 +27,10 @@ function RecentBookingRequests() {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    className={`
+                                    className={`cursor-default
                           ${request.status === 'Pending'
                                             ? 'text-orange-400 border-orange-400 hover:bg-orange-50'
-                                            : request.status === 'Approved'
+                                            : request.status === 'Accepted'
                                                 ? 'text-green-500 border-green-500 hover:bg-green-50'
                                                 : 'text-red-500 border-red-500 hover:bg-red-50'
                                         }`}

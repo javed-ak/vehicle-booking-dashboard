@@ -4,6 +4,7 @@ import { useDashboard } from "@/hooks";
 import { useState } from "react";
 import Modal from "@/components/ui/Model";
 import { toast, ToastContainer } from "react-toastify";
+import { Cross } from "lucide-react";
 
 export default function AllBookingRequests() {
     const { loading, dashboardData, handleBookingAction, updateBookingDetails } = useDashboard();
@@ -26,7 +27,8 @@ export default function AllBookingRequests() {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const requestsPerPage = 20;
 
-    // Filtered data based on search and vehicle filter
+    const [statusFilter, setStatusFilter] = useState<string>("");
+
     const filteredData = dashboardData.filter((request) => {
         const matchesVehicle =
             !vehicleFilter || request.vehicle.toLowerCase().includes(vehicleFilter.toLowerCase());
@@ -36,8 +38,11 @@ export default function AllBookingRequests() {
                 .toLowerCase()
                 .includes(searchQuery.toLowerCase()) ||
             request.vehicle.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesVehicle && matchesSearch;
+        const matchesStatus =
+            !statusFilter || request.status.toLowerCase() === statusFilter.toLowerCase();
+        return matchesVehicle && matchesSearch && matchesStatus;
     });
+
 
     const uniqueVehicles = Array.from(
         new Set(dashboardData.map((request) => request.vehicle))
@@ -49,8 +54,6 @@ export default function AllBookingRequests() {
         (currentPage - 1) * requestsPerPage,
         currentPage * requestsPerPage
     );
-
-
 
     // Handle input change for editable fields
     const handleFieldChange = (e) => {
@@ -73,7 +76,7 @@ export default function AllBookingRequests() {
             await updateBookingDetails(selectedBooking.id, editableFields);
             toast.success("Request saved successfully!");
             setIsEditing(false); // Exit edit mode
-            setSelectedBooking(null); // Close the modal
+            // setSelectedBooking(null); // Close the modal
             setPrepTime("0");
         }
     };
@@ -94,8 +97,6 @@ export default function AllBookingRequests() {
         );
     }
 
-
-
     return (
         <div className="p-6 overflow-y-auto flex-grow">
             <ToastContainer position="top-right" />
@@ -112,18 +113,40 @@ export default function AllBookingRequests() {
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
 
-                    {/* Vehicle Filter Dropdown */}
+                    {/* Vehicle and Status Filter Dropdown */}
                     <select
                         className="p-2 border border-gray-300 rounded text-sm w-48 focus:outline-none"
-                        value={vehicleFilter}
-                        onChange={(e) => setVehicleFilter(e.target.value)}
+                        value={vehicleFilter || statusFilter} // Dynamically show the active filter
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            if (["Canceled", "Pending", "Accepted", "Rejected"].includes(value)) {
+                                setStatusFilter(value); // Update status filter
+                                setVehicleFilter(""); // Clear vehicle filter
+                            } else {
+                                setVehicleFilter(value); // Update vehicle filter
+                                setStatusFilter(""); // Clear status filter
+                            }
+                        }}
                     >
-                        <option value="">Filter by Vehicle</option>
-                        {uniqueVehicles.map((vehicle) => (
-                            <option key={vehicle} value={vehicle}>
-                                {vehicle}
-                            </option>
-                        ))}
+                        {/* Default option */}
+                        <option value="">Filter by</option>
+
+                        {/* Vehicle options */}
+                        <optgroup label="Vehicles">
+                            {uniqueVehicles.map((vehicle) => (
+                                <option key={vehicle} value={vehicle}>
+                                    {vehicle}
+                                </option>
+                            ))}
+                        </optgroup>
+
+                        {/* Status options */}
+                        <optgroup label="Status">
+                            <option value="Canceled">Canceled</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Accepted">Accepted</option>
+                            <option value="Rejected">Rejected</option>
+                        </optgroup>
                     </select>
                 </CardHeader>
                 <CardContent>
@@ -193,12 +216,12 @@ export default function AllBookingRequests() {
             {/* Popup for Selected Booking */}
             {selectedBooking && (
                 <Modal
-                    isOpen={!!selectedBooking}
+                    isOpen={selectedBooking}
                     onClose={() => {
                         setSelectedBooking(null);
                         setIsEditing(false); // Exit edit mode when modal is closed
                     }}
-                    title={isEditing ? "Edit Booking" : "Booking Details"}
+                    title={isEditing ? "Modify Booking" : "Booking Details"}
                 >
                     <div className="p-4 space-y-4 border-t-4 border-orange-500">
 
@@ -214,7 +237,7 @@ export default function AllBookingRequests() {
                             <strong>Phone Number:</strong> {selectedBooking.phone}
                         </div>
                         <div>
-                            <strong>Vehicle:</strong>
+                            <strong>Vehicle: </strong>
                             {isEditing ? (
                                 <input
                                     type="text"
@@ -235,8 +258,8 @@ export default function AllBookingRequests() {
                                 </div>
                             ) : (
                                 <div>
-                                    <label htmlFor="dateTime" className="block text-sm font-medium text-gray-700">
-                                        Date/Time:
+                                    <label htmlFor="dateTime" className="block text-sm font-medium">
+                                        <strong>Date/Time:</strong>
                                     </label>
                                     <input
                                         type="text"
@@ -250,7 +273,7 @@ export default function AllBookingRequests() {
                             )}
                         </div>
                         <div>
-                            <strong>Pickup Location:</strong>
+                            <strong>Pick-up Location: </strong>
                             {isEditing ? (
                                 <input
                                     type="text"
@@ -265,7 +288,7 @@ export default function AllBookingRequests() {
                             )}
                         </div>
                         <div>
-                            <strong>Drop-off Location:</strong>
+                            <strong>Drop-off Location: </strong>
                             {isEditing ? (
                                 <input
                                     type="text"
@@ -280,7 +303,7 @@ export default function AllBookingRequests() {
                             )}
                         </div>
                         <div>
-                            <strong>Preparation Time : </strong>
+                            <strong>Preparation Time (hrs.): </strong>
                             {isEditing ? (
                                 <input
                                     type="text"
@@ -301,9 +324,6 @@ export default function AllBookingRequests() {
                         <div>
                             <strong>Status:</strong> {selectedBooking.status}
                         </div>
-                        <div>
-                            <strong>Note:</strong> {selectedBooking.note}
-                        </div>
 
                         {/* Buttons */}
                         <div className="flex justify-end space-x-4 mt-4">
@@ -322,7 +342,7 @@ export default function AllBookingRequests() {
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="text-blue-500 border-blue-500 hover:bg-blue-50"
+                                                className="text-black border-black hover:bg-slate-50"
                                                 onClick={() => setIsEditing(true)}
                                             >
                                                 Modify
@@ -339,9 +359,17 @@ export default function AllBookingRequests() {
                                             >
                                                 Modify
                                             </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="text-red-500 border-red-500 hover:bg-red-50"
+                                                onClick={() => handleAction(selectedBooking.id, "Canceled")}
+                                            >
+                                                Cancel
+                                            </Button>
                                         </>
                                     )}
-                                    {(selectedBooking.status === "Pending" || selectedBooking.status === "Accepted") && (
+                                    {(selectedBooking.status === "Pending") && (
                                         <Button
                                             variant="outline"
                                             size="sm"

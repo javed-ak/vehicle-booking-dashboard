@@ -13,7 +13,7 @@ import { UserDataProvider } from '@/context/userContext';
 import { BACKEND_URL } from "@/config";
 const BookingDashboard = () => {
   const { requests } = useRequests();
-  const { loading, dashboardData } = useDashboard();
+  const { loading } = useDashboard();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,13 +64,13 @@ const BookingDashboard = () => {
         <div className="text-2xl font-bold mb-8 text-center">
           Admin Dashboard
         </div>
-        <div className={`flex items-center p-3 rounded cursor-pointer active:bg-zinc-700 text-white hover:bg-zinc-500`} onClick={() => {
+        <div className={`flex items-center p-3 rounded cursor-pointer active:bg-zinc-700 text-white ${slide == 1 ? 'bg-zinc-700' : 'hover:bg-zinc-500'}`} onClick={() => {
           setSlide(1);
         }}>
           <div className="mr-3"><LayoutDashboard /></div>
           <span className="flex-grow">Dashboard</span>
         </div>
-        <div className={`flex items-center p-3 rounded cursor-pointer active:bg-zinc-700 text-white hover:bg-zinc-500`}
+        <div className={`flex items-center p-3 rounded cursor-pointer active:bg-zinc-700 text-white ${slide == 2 ? 'bg-zinc-700' : 'hover:bg-zinc-500'}`}
           onClick={() => {
             setSlide(2);
           }}>
@@ -81,13 +81,13 @@ const BookingDashboard = () => {
             {requests}
           </span>
         </div>
-        <div className={`flex items-center p-3 rounded cursor-pointer active:bg-zinc-700 text-white hover:bg-zinc-500`} onClick={() => {
+        <div className={`flex items-center p-3 rounded cursor-pointer active:bg-zinc-700 text-white ${slide == 3 ? 'bg-zinc-700' : 'hover:bg-zinc-500'}`} onClick={() => {
           setSlide(3);
         }}>
           <div className="mr-3"><Car /></div>
-          <span className="flex-grow">Vehicle</span>
+          <span className="flex-grow">Vehicles</span>
         </div>
-        <div className={`flex items-center p-3 rounded cursor-pointer active:bg-zinc-700 text-white hover:bg-zinc-500`} onClick={() => {
+        <div className={`flex items-center p-3 rounded cursor-pointer active:bg-zinc-700 text-white ${slide == 4 ? 'bg-zinc-700' : 'hover:bg-zinc-500'}`} onClick={() => {
           setSlide(4);
         }}>
           <div className="mr-3"><User /></div>
@@ -104,7 +104,7 @@ const BookingDashboard = () => {
       {/* Main Content */}
       <div className="flex-grow flex flex-col">
         {/* Header */}
-        <Header />
+        <Header setSlide={setSlide} />
 
         {/* Dashboard Content */}
         {slide == 1 && <DashboardContent />}

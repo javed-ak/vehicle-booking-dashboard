@@ -66,6 +66,21 @@ export default function BasicDetails() {
   };
 
   useEffect(() => {
+    // Perform validation and enable/disable "Next" button
+    const isValid =
+      requestData.firstName &&
+      requestData.lastName &&
+      validatePhone(requestData.phone) &&
+      validateEmail(requestData.email) &&
+      requestData.pickup &&
+      requestData.dropoff &&
+      requestData.dateTime;
+  
+    setShowNext({ show: isValid });
+  }, [requestData, setShowNext]);
+  
+
+  useEffect(() => {
     if (
       !requestData.firstName ||
       !requestData.lastName ||

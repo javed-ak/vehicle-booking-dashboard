@@ -79,12 +79,11 @@ router.post('/', async (req, res) => {
                             <li><strong>Pickup Location:</strong> ${body.pickup}</li>
                             <li><strong>Drop-off Location:</strong> ${body.dropoff}</li>
                             <li><strong>Date & Time:</strong> ${body.dateTime}</li>
-                            <li><strong>Note:</strong> ${body.note}</li>
                         </ul>
                         <br>
                         <p>One of our executives will get in touch with you shortly to confirm your booking and walk you through rest of the process. Once booked, you will receive another confirmation email with all the necessary details.</p>
                         <p>If you have any questions or need to modify your booking, please don't hesitate to contact us at +1 657-389-3470 or sales@blackvans.com.</p>
-                        <p>nThank you for choosing us for your journey!</p>
+                        <p>Thank you for choosing us for your journey!</p>
                         <br>
                         <p>Best regards,</p>
                         <p>Customer Care</p>
@@ -242,7 +241,7 @@ router.put('/', async (req, res) => {
                 personalizations: [
                     {
                         to: [{ email: userEmail }],
-                        subject: "Booking Request Received",
+                        subject: "Booking Request Accepted",
                     },
                 ],
                 from: { email: "javedakhtary15@gmail.com" }, // Replace with your verified sender email
@@ -308,7 +307,7 @@ router.put('/', async (req, res) => {
                 personalizations: [
                     {
                         to: [{ email: userEmail }],
-                        subject: "Booking Request Received",
+                        subject: "Booking Request Rejected/Canceled",
                     },
                 ],
                 from: { email: "javedakhtary15@gmail.com" }, // Replace with your verified sender email
@@ -317,7 +316,7 @@ router.put('/', async (req, res) => {
                         type: "text/html",
                         value: `
                         <p>Dear ${request.rows[0].firstName}</p>
-                        <p>Thank you for choosing Black Vans Transportation. We regret to inform you that your booking request on ${request.rows[0].dateTime} has been rejected at this time.
+                        <p>Thank you for choosing Black Vans Transportation. We regret to inform you that your booking request on ${request.rows[0].dateTime} has been rejected/canceled at this time.
                         This could be due to a variety of reasons, such as availability or other requirements. We apologize for any inconvenience this may cause. If you need any further assistance or have any questions, please don't hesitate to reach out to our support team. We hope to serve you in the future. </p>
                         
                         <br>

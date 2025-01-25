@@ -157,6 +157,19 @@ export default function DateTime() {
     }
   };
 
+  const isSlotDisabled = (slot: string, index: number): boolean => {
+    const today = new Date();
+    if (selectedDate) {
+      const isSameDay = selectedDate.toDateString() === today.toDateString();
+      if (isSameDay) {
+        const currentHour = today.getHours(); // Current hour in 24-hour format
+        const slotStartHour = index; // Each slot index corresponds to its hour (e.g., 0 = 12:00 AM, 1 = 1:00 AM, etc.)
+        return slotStartHour <= currentHour || bookedSlots.includes(slot); // Disable if time has passed or slot is booked
+      }
+    }
+    return bookedSlots.includes(slot); // For other days, only disable booked slots
+  };
+
   const tileDisabled = ({ date }: { date: Date }) => {
     const formattedDate = format(date, "yyyy-MM-dd");
     return bookedDates.includes(formattedDate);
@@ -237,26 +250,37 @@ export default function DateTime() {
               Minimum 4 slot booking acceptable*
             </div>
           </div>
-          <div className="flex flex-col gap-2 h-56 overflow-auto">
-            {timeSlots.map((slot, index) => (
-              <button
-                key={index}
-                className={`border p-3 rounded-lg transition-all ${bookedSlots.includes(slot)
-                  ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-                  : selectedSlots.includes(index)
-                    ? "bg-orange-50 border-orangeColor"
-                    : "hover:bg-gray-100"
-                  }`}
-                onClick={() =>
-                  bookedSlots && !bookedSlots.includes(slot) && handleTimeSlotClick(index)
-                }
-                disabled={bookedSlots.includes(slot)}
-              >
-                {slot}
-              </button>
-            ))}
+
+          <div className={`relative ${!selectedDate ? "opacity-50" : ""}`}>
+            <div className="flex flex-col gap-2 h-56 overflow-auto">
+              {timeSlots.map((slot, index) => (
+                <button
+                  key={index}
+                  className={`border p-3 rounded-lg transition-all ${isSlotDisabled(slot, index)
+                      ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                      : selectedSlots.includes(index)
+                        ? "bg-orange-50 border-orangeColor"
+                        : "hover:bg-gray-100"
+                    }`}
+                  onClick={() =>
+                    !isSlotDisabled(slot, index) && handleTimeSlotClick(index)
+                  }
+                  disabled={!selectedDate || isSlotDisabled(slot, index)}
+                >
+                  {slot}
+                </button>
+              ))}
+            </div>
+
+            {!selectedDate && (
+              <div className="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center">
+                <p className="text-gray-500 font-medium">Please select a date first</p>
+              </div>
+            )}
           </div>
+
         </div>
+
       </div>
       <div className="flex justify-center mt-5">
         <div>{error && <p className="text-red-500 text-sm mt-1">{error}</p>}</div>

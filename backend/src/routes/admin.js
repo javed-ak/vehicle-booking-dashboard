@@ -77,6 +77,34 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.put('/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { name, email } = req.body;
+
+      if (!name || !email) {
+        return res.status(400).json({ msg: 'Name and Email are required!' });
+      }
+  
+      const admin = await client.query(
+        `UPDATE "Admin" SET name = $1, email = $2 WHERE id = $3 RETURNING *`,
+        [name, email, id]
+      );
+  
+      if (admin.rows.length === 0) {
+        return res.status(404).json({ msg: 'Admin not found!' });
+      }
+  
+      res.json({
+        msg: 'Admin updated successfully!',
+        admin: admin.rows[0],
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(400).json({ msg: 'Error while updating admin!' });
+    }
+  });
+  
 router.delete('/:id', async (req, res) => {
     try {
         const id = req.params.id;
@@ -122,6 +150,31 @@ router.get('/vehicle', async (req, res) => {
     } catch (err) {
         console.log(err);
         res.status(400).json({ msg: 'Error while fetching vehicles!' });
+    }
+});
+
+router.put('/vehicle/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name } = req.body;
+
+        if (!name) {
+            return res.status(400).json({ msg: 'Vehicle name is required' });
+        }
+
+        const vehicle = await client.query(
+            `UPDATE "Vehicle" SET name = $1 WHERE id = $2 RETURNING *`,
+            [name, id]
+        );
+
+        if (vehicle.rows.length === 0) {
+            return res.status(404).json({ msg: 'Vehicle not found!' });
+        }
+
+        res.json({ msg: 'Vehicle updated successfully!', vehicle: vehicle.rows[0] });
+    } catch (err) {
+        console.error(err);
+        res.status(400).json({ msg: 'Error while updating vehicle!' });
     }
 });
 

@@ -1,57 +1,170 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ResponsiveContainer, BarChart as RechartsBarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import {
+  ResponsiveContainer,
+  BarChart as RechartsBarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+} from "recharts";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { BACKEND_URL } from "@/config";
 
-// Booking data
-const weeklyBookingData = [
-  { week: 'Week 1', bookings: 25 },
-  { week: 'Week 2', bookings: 32 },
-  { week: 'Week 3', bookings: 45 },
-  { week: 'Week 4', bookings: 50 }
-];
+interface Booking {
+  id: string;
+  vehicle: string;
+  dateTime: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  pickup: string;
+  dropoff: string;
+  prepTime: number;
+  note: string;
+  status: string;
+  createdAt: string; // ISO format
+}
 
-const monthlyBookingData = [
-  { month: 'Jan', bookings: 150 },
-  { month: 'Feb', bookings: 180 },
-  { month: 'Mar', bookings: 200 },
-  { month: 'Apr', bookings: 250 },
-  { month: 'May', bookings: 220 },
-  { month: 'Jun', bookings: 300 }
-];
+export default function WeeklyAndMonthlyBookings() {
+  const [weeklyData, setWeeklyData] = useState<{ week: string; bookings: number }[]>([]);
+  const [monthlyData, setMonthlyData] = useState<{ month: string; bookings: number }[]>([]);
 
-export default function BookingGraphs() {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}/api/v1/booking/bulk`, {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        });
+        const bookings: Booking[] = response.data;
+
+        // Process data for both graphs
+        setWeeklyData(getWeeklyDataForCurrentMonth(bookings));
+        setMonthlyData(getMonthlyData(bookings));
+      } catch (error) {
+        console.error("Failed to fetch booking data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const getWeeklyDataForCurrentMonth = (bookings: Booking[]) => {
+    const weekMap: Record<string, number> = {};
+    const today = new Date();
+    const currentMonth = today.getMonth(); // 0-based month index
+    const currentYear = today.getFullYear();
+
+    // Filter bookings for the current month
+    const currentMonthBookings = bookings.filter((booking) => {
+      const createdDate = new Date(booking.createdAt);
+      return (
+        createdDate.getMonth() === currentMonth && createdDate.getFullYear() === currentYear
+      );
+    });
+
+    // Group bookings by week number
+    currentMonthBookings.forEach((booking) => {
+      const createdDate = new Date(booking.createdAt);
+      const weekNumber = getWeekOfMonth(createdDate);
+
+      weekMap[`Week ${weekNumber}`] = (weekMap[`Week ${weekNumber}`] || 0) + 1;
+    });
+
+    // Create data array for all weeks of the current month
+    const totalWeeksInMonth = getTotalWeeksInMonth(currentYear, currentMonth);
+    const weeklyData: { week: string; bookings: number }[] = [];
+    for (let i = 1; i <= totalWeeksInMonth; i++) {
+      weeklyData.push({
+        week: `Week ${i}`,
+        bookings: weekMap[`Week ${i}`] || 0,
+      });
+    }
+
+    return weeklyData;
+  };
+
+  const getMonthlyData = (bookings: Booking[]) => {
+    const monthMap: Record<string, number> = {};
+    const today = new Date();
+    const monthsToShow = 3; // Current + 2 future months
+
+    // Group bookings by month
+    bookings.forEach((booking) => {
+      const createdDate = new Date(booking.createdAt);
+      const monthYear = getMonthYear(createdDate);
+
+      monthMap[monthYear] = (monthMap[monthYear] || 0) + 1;
+    });
+
+    // Add future months with 0 bookings
+    const monthsData: { month: string; bookings: number }[] = [];
+    for (let i = 0; i < monthsToShow; i++) {
+      const date = new Date();
+      date.setMonth(today.getMonth() + i);
+      const monthYear = getMonthYear(date);
+
+      monthsData.push({
+        month: monthYear,
+        bookings: monthMap[monthYear] || 0,
+      });
+    }
+
+    return monthsData;
+  };
+
+  const getWeekOfMonth = (date: Date): number => {
+    const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+    return Math.ceil((date.getDate() + firstDayOfMonth.getDay()) / 7);
+  };
+
+  const getTotalWeeksInMonth = (year: number, month: number): number => {
+    const lastDayOfMonth = new Date(year, month + 1, 0);
+    return getWeekOfMonth(lastDayOfMonth);
+  };
+
+  const getMonthYear = (date: Date): string => {
+    const options: Intl.DateTimeFormatOptions = { month: "short", year: "numeric" };
+    return date.toLocaleDateString("en-US", options); // Example: "Jan 2025"
+  };
+
   return (
-    <div className="grid grid-cols-2 gap-6 mb-6">
-      {/* Weekly Booking Requests */}
-      <Card>
+    <div className="flex flex-col lg:flex-row gap-6">
+      {/* Weekly Bookings Graph */}
+      <Card className="flex-1">
         <CardHeader>
-          <CardTitle>Weekly Booking Requests</CardTitle>
+          <CardTitle>Weekly Bookings</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <RechartsBarChart data={weeklyBookingData}>
+            <RechartsBarChart data={weeklyData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="week" />
+              <XAxis dataKey="week" tick={{ fontSize: 12 }} />
               <YAxis />
-              <Tooltip formatter={(value) => [`${value}`, 'Bookings']} />
-              <Bar dataKey="bookings" fill="#34d399" />
+              <Tooltip formatter={(value) => [`${value}`, "Bookings"]} />
+              <Bar dataKey="bookings" fill="#4F46E5" />
             </RechartsBarChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
 
-      {/* Monthly Booking Requests */}
-      <Card>
+      {/* Monthly Bookings Graph */}
+      <Card className="flex-1">
         <CardHeader>
-          <CardTitle>Monthly Booking Requests</CardTitle>
+          <CardTitle>Monthly Bookings</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <RechartsBarChart data={monthlyBookingData}>
+            <RechartsBarChart data={monthlyData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
+              <XAxis dataKey="month" tick={{ fontSize: 12 }} />
               <YAxis />
-              <Tooltip formatter={(value) => [`${value}`, 'Bookings']} />
-              <Bar dataKey="bookings" fill="#60a5fa" />
+              <Tooltip formatter={(value) => [`${value}`, "Bookings"]} />
+              <Bar dataKey="bookings" fill="#34D399" />
             </RechartsBarChart>
           </ResponsiveContainer>
         </CardContent>

@@ -5,15 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { useUserData } from "@/context/userContext";
 import { Bell } from "lucide-react";
 import { useRequests } from "@/hooks";
-// Admin user details
-// const adminUser = {
-//     name: 'Javed Akhtar',
-//     email: 'javedakhtar@gmail.com',
-//     role: 'Super Admin',
-//     avatar: '/path/to/avatar.jpg'
-// };
 
-export default function Header() {
+export default function Header({setSlide} : any) {
     const { requests } = useRequests();
 
     const navigate = useNavigate();
@@ -29,7 +22,7 @@ export default function Header() {
             <div className="flex items-center space-x-4">
                 <div className="relative">
                     <Bell
-                        className={`h-8 w-8 ${requests > 0 ? 'text-orange-400 animate-bounce' : 'text-gray-500'}`}
+                        className={`h-8 w-8 ${requests > 0 ? 'text-orangeColor animate-bounce' : 'text-gray-500'}`}
                     />
                     {requests > 0 && (
                         <span className="absolute -top-2 -right-1 bg-red-500 text-white rounded-full px-1 text-[10px]">
@@ -43,7 +36,7 @@ export default function Header() {
                     <DropdownMenuTrigger asChild>
                         <Avatar className="cursor-pointer">
                             {/* <AvatarImage src={name} alt={name.name} /> */}
-                            <AvatarFallback className="bg-orange-400 text-white">
+                            <AvatarFallback className="bg-orangeColor text-white">
                                 {name.split(' ').map(name => name[0]).join('')}
                             </AvatarFallback>
                         </Avatar>

@@ -69,11 +69,6 @@ export default function BookingDetails({ data }: { data: BookingProps }) {
             </p>
           </div>
         </div>
-        
-        <div className="space-y-1">
-          <p className="text-sm text-gray-500">Note</p>
-          <p className="font-medium">{data.note}</p>
-        </div>
       </CardContent>
       
       <CardFooter className="flex justify-end space-x-4 pt-6 border-t">
