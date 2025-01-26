@@ -63,7 +63,7 @@ router.post('/', async (req, res) => {
                     subject: "Booking Request Received",
                 },
             ],
-            from: { email: "javedakhtary15@gmail.com" }, // Replace with your verified sender email
+            from: { email: "info.blackvans@gmail.com" }, // Replace with your verified sender email
             content: [
                 {
                     type: "text/html",
@@ -101,7 +101,7 @@ router.post('/', async (req, res) => {
                     subject: "New Booking Request Submitted",
                 },
             ],
-            from: { email: "javedakhtary15@gmail.com" }, // Replace with your verified sender email
+            from: { email: "info.blackvans@gmail.com" }, // Replace with your verified sender email
             content: [
                 {
                     type: "text/html",
@@ -244,13 +244,13 @@ router.put('/', async (req, res) => {
                         subject: "Booking Request Accepted",
                     },
                 ],
-                from: { email: "javedakhtary15@gmail.com" }, // Replace with your verified sender email
+                from: { email: "info.blackvans@gmail.com" }, // Replace with your verified sender email
                 content: [
                     {
                         type: "text/html",
                         value: `
                         <p>Dear ${request.rows[0].firstName}</p>
-                        <p>Thank you for choosing Black Vans Transportation. Your booking has been accepted below are the booking details.</p>
+                        <p>Thank you for choosing Black Vans Transportation. Your booking has been accepted. Below are the booking details.</p>
                         <p>Booking Details:</p>
                         <ul>
                             <li><strong>Name:</strong> ${request.rows[0].firstName} ${request.rows[0].lastName}</li>
@@ -310,14 +310,14 @@ router.put('/', async (req, res) => {
                         subject: "Booking Request Rejected/Canceled",
                     },
                 ],
-                from: { email: "javedakhtary15@gmail.com" }, // Replace with your verified sender email
+                from: { email: "info.blackvans@gmail.com" }, // Replace with your verified sender email
                 content: [
                     {
                         type: "text/html",
                         value: `
                         <p>Dear ${request.rows[0].firstName}</p>
                         <p>Thank you for choosing Black Vans Transportation. We regret to inform you that your booking request on ${request.rows[0].dateTime} has been rejected/canceled at this time.
-                        This could be due to a variety of reasons, such as availability or other requirements. We apologize for any inconvenience this may cause. If you need any further assistance or have any questions, please don't hesitate to reach out to our support team. We hope to serve you in the future. </p>
+                        This could be due to a variety of reasons, such as unavailability of the vehicle, slots or any other requirements. We apologize for any inconvenience this may cause. If you need any further assistance or have any questions, please don't hesitate to reach out to our support team. We hope to serve you in the future. </p>
                         
                         <br>
                         <p>Best regards,</p>

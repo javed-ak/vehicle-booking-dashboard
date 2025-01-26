@@ -146,7 +146,7 @@ export default function WeeklyAndMonthlyBookings() {
               <XAxis dataKey="week" tick={{ fontSize: 12 }} />
               <YAxis />
               <Tooltip formatter={(value) => [`${value}`, "Bookings"]} />
-              <Bar dataKey="bookings" fill="#4F46E5" />
+              <Bar dataKey="bookings" fill="#E95440" />
             </RechartsBarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -164,7 +164,7 @@ export default function WeeklyAndMonthlyBookings() {
               <XAxis dataKey="month" tick={{ fontSize: 12 }} />
               <YAxis />
               <Tooltip formatter={(value) => [`${value}`, "Bookings"]} />
-              <Bar dataKey="bookings" fill="#34D399" />
+              <Bar dataKey="bookings" fill="#000" />
             </RechartsBarChart>
           </ResponsiveContainer>
         </CardContent>
