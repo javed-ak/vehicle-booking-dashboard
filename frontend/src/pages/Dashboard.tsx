@@ -11,6 +11,7 @@ import Loader from '@/components/custom/Loader';
 import { useNavigate } from 'react-router-dom';
 import { UserDataProvider } from '@/context/userContext';
 import { BACKEND_URL } from "@/config";
+import { BookingDataProvider } from '@/context/setBooking';
 const BookingDashboard = () => {
   const { requests } = useRequests();
   const { loading } = useDashboard();
@@ -107,7 +108,7 @@ const BookingDashboard = () => {
         <Header setSlide={setSlide} />
 
         {/* Dashboard Content */}
-        {slide == 1 && <DashboardContent />}
+        {slide == 1 && <DashboardContent setSlide={setSlide} />}
         {slide == 2 && <AllBookingRequests />}
         {slide == 3 && <AddVehicle />}
         {slide == 4 && <AdminManagement />}
@@ -119,7 +120,9 @@ const BookingDashboard = () => {
 export default function BookingDashboardComponent() {
   return (
     <UserDataProvider>
-      <BookingDashboard />
+      <BookingDataProvider>
+        <BookingDashboard />
+      </BookingDataProvider>
     </UserDataProvider>
   );
 }

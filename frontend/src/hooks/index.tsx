@@ -1,5 +1,6 @@
 import { BACKEND_URL } from "@/config";
 import axios from "axios";
+import { set } from "date-fns";
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 
@@ -80,7 +81,7 @@ export const useDashboard = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const fun = () => {
     axios
       .get(`${BACKEND_URL}/api/v1/booking/bulk`, {
         headers: {
@@ -94,6 +95,13 @@ export const useDashboard = () => {
       .catch(() => {
         // navigate("/signin");
       });
+  }
+  useEffect(() => {
+    fun();
+    const intervalId = setInterval(fun, 30000);
+    return () => {
+      clearInterval(intervalId);
+    };
   }, []);
 
   // Update booking details
@@ -180,7 +188,7 @@ export const useRequests = () => {
   const [requests, setRequests] = useState(0);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const fun = () => {
     axios
       .get(`${BACKEND_URL}/api/v1/booking/requests`)
       .then((response) => {
@@ -190,6 +198,13 @@ export const useRequests = () => {
       .catch(() => {
         // navigate("/signin");
       });
+  }
+  useEffect(() => {
+    fun();
+    const intervalId = setInterval(fun, 30000);
+    return () => {
+      clearInterval(intervalId);
+    };
   }, []);
 
   return {

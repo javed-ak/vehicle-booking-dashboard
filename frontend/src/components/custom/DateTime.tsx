@@ -274,7 +274,7 @@ export default function DateTime() {
 
             {!selectedDate && (
               <div className="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center">
-                <p className="text-gray-500 font-medium">Please select a date first</p>
+                <p className="text-red-600 font-bold">Please select a date first</p>
               </div>
             )}
           </div>

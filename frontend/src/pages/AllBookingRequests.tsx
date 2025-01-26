@@ -5,14 +5,14 @@ import { useState } from "react";
 import Modal from "@/components/ui/Model";
 import { toast, ToastContainer } from "react-toastify";
 import { Cross } from "lucide-react";
+import { useBookingData } from "@/context/setBooking";
 
 export default function AllBookingRequests() {
     const { loading, dashboardData, handleBookingAction, updateBookingDetails } = useDashboard();
-
+    const { bookingData, setBookingData } = useBookingData();
     // States for filtering
     const [vehicleFilter, setVehicleFilter] = useState<string>("");
     const [searchQuery, setSearchQuery] = useState<string>("");
-    const [selectedBooking, setSelectedBooking] = useState(null);
     const [prepTime, setPrepTime] = useState<string>("0");
     // State for the selected booking (for popup and edit)
     const [isEditing, setIsEditing] = useState(false); // State to track edit mode
@@ -72,22 +72,22 @@ export default function AllBookingRequests() {
 
     // Save the updated data to the database
     const saveChanges = async () => {
-        if (selectedBooking) {
-            await updateBookingDetails(selectedBooking.id, editableFields);
+        if (bookingData) {
+            await updateBookingDetails(bookingData.id, editableFields);
             // @ts-ignore
-            selectedBooking.prepTime = editableFields.prepTime || selectedBooking.prepTime;
+            bookingData.prepTime = editableFields.prepTime || bookingData.prepTime;
             // @ts-ignore
-            selectedBooking.dateTime = editableFields.dateTime || selectedBooking.dateTime;
+            bookingData.dateTime = editableFields.dateTime || bookingData.dateTime;
             // @ts-ignore
-            selectedBooking.vehicle = editableFields.vehicle || selectedBooking.vehicle;
+            bookingData.vehicle = editableFields.vehicle || bookingData.vehicle;
             // @ts-ignore
-            selectedBooking.pickup = editableFields.pickup || selectedBooking.pickup;
+            bookingData.pickup = editableFields.pickup || bookingData.pickup;
             // @ts-ignore
-            selectedBooking.dropoff = editableFields.dropoff || selectedBooking.dropoff;
+            bookingData.dropoff = editableFields.dropoff || bookingData.dropoff;
 
             toast.success("Request saved successfully!");
             setIsEditing(false); // Exit edit mode
-            // setSelectedBooking(null); // Close the modal
+            // setBookingData(null); // Close the modal
 
         }
     };
@@ -96,14 +96,14 @@ export default function AllBookingRequests() {
         setPrepTime("0");
         await handleBookingAction(id, action, parseInt(prepTime));
         toast.success(`Booking ${action.toLowerCase()} successfully!`);
-        setSelectedBooking(null);
+        setBookingData(null);
     };
 
     // Show loading spinner if data is still loading
     if (loading) {
         return (
             <div className="flex justify-center items-center h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-orange-500 border-solid"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-orangeColor border-solid"></div>
             </div>
         );
     }
@@ -168,7 +168,7 @@ export default function AllBookingRequests() {
                                 className="flex justify-between items-center p-4 my-4 bg-gray-100 rounded cursor-pointer"
                                 onClick={() => {
                                     // @ts-ignore
-                                    setSelectedBooking(request);
+                                    setBookingData(request);
                                     setPrepTime(String(request.prepTime));
                                     setEditableFields({
                                         dateTime: request.dateTime,
@@ -189,10 +189,10 @@ export default function AllBookingRequests() {
                                         variant="outline"
                                         size="sm"
                                         className={`${request.status === "Pending"
-                                            ? "text-orange-400 border-orange-400 hover:bg-orange-50"
+                                            ? "bg-orangeColor text-white hover:bg-orange-50"
                                             : request.status === "Accepted"
-                                                ? "text-green-500 border-green-500 hover:bg-green-50"
-                                                : "text-red-500 border-red-500 hover:bg-red-50"
+                                                ? "text-white bg-green-600 hover:border-green-600"
+                                                : "bg-red-600 text-white border-red-500 hover:bg-red-50"
                                             }`}
                                     >
                                         {request.status}
@@ -225,27 +225,27 @@ export default function AllBookingRequests() {
             </div>
 
             {/* Popup for Selected Booking */}
-            {selectedBooking && (
+            {bookingData && (
                 <Modal
-                    isOpen={selectedBooking}
+                    isOpen={bookingData}
                     onClose={() => {
-                        setSelectedBooking(null);
+                        setBookingData(null);
                         setIsEditing(false); // Exit edit mode when modal is closed
                     }}
                     title={isEditing ? "Modify Booking" : "Booking Details"}
                 >
-                    <div className="p-4 space-y-4 border-t-4 border-orange-500">
+                    <div className="p-4 space-y-4 border-t-4 border-orangeColor">
 
                         {/* Show editable fields for other data except name, email, and phone number */}
 
                         <div>
-                            <strong>Name:</strong> {selectedBooking.firstName} {selectedBooking.lastName}
+                            <strong>Name:</strong> {bookingData.firstName} {bookingData.lastName}
                         </div>
                         <div>
-                            <strong>Email:</strong> {selectedBooking.email}
+                            <strong>Email:</strong> {bookingData.email}
                         </div>
                         <div>
-                            <strong>Phone Number:</strong> {selectedBooking.phone}
+                            <strong>Phone Number:</strong> {bookingData.phone}
                         </div>
                         <div>
                             <strong>Vehicle: </strong>
@@ -255,17 +255,17 @@ export default function AllBookingRequests() {
                                     id="vehicle"
                                     name="vehicle"
                                     className="mt-1 p-2 block w-full border border-gray-300 rounded"
-                                    value={editableFields.vehicle || selectedBooking.vehicle}
+                                    value={editableFields.vehicle || bookingData.vehicle}
                                     onChange={handleFieldChange}
                                 />
                             ) : (
-                                selectedBooking.vehicle
+                                bookingData.vehicle
                             )}
                         </div>
                         <div>
                             {!isEditing ? (
                                 <div>
-                                    <strong>Date/Time:</strong> {selectedBooking.dateTime}
+                                    <strong>Date/Time:</strong> {bookingData.dateTime}
                                 </div>
                             ) : (
                                 <div>
@@ -277,7 +277,7 @@ export default function AllBookingRequests() {
                                         id="dateTime"
                                         name="dateTime"
                                         className="mt-1 p-2 block w-full border border-gray-300 rounded"
-                                        value={editableFields.dateTime || selectedBooking.dateTime}
+                                        value={editableFields.dateTime || bookingData.dateTime}
                                         onChange={handleFieldChange}
                                     />
                                 </div>
@@ -291,11 +291,11 @@ export default function AllBookingRequests() {
                                     id="pickup"
                                     name="pickup"
                                     className="mt-1 p-2 block w-full border border-gray-300 rounded"
-                                    value={editableFields.pickup || selectedBooking.pickup}
+                                    value={editableFields.pickup || bookingData.pickup}
                                     onChange={handleFieldChange}
                                 />
                             ) : (
-                                selectedBooking.pickup
+                                bookingData.pickup
                             )}
                         </div>
                         <div>
@@ -306,11 +306,11 @@ export default function AllBookingRequests() {
                                     id="dropoff"
                                     name="dropoff"
                                     className="mt-1 p-2 block w-full border border-gray-300 rounded"
-                                    value={editableFields.dropoff || selectedBooking.dropoff}
+                                    value={editableFields.dropoff || bookingData.dropoff}
                                     onChange={handleFieldChange}
                                 />
                             ) : (
-                                selectedBooking.dropoff
+                                bookingData.dropoff
                             )}
                         </div>
                         <div>
@@ -329,43 +329,43 @@ export default function AllBookingRequests() {
                                     }}
                                 />
                             ) : (
-                                selectedBooking.prepTime
+                                bookingData.prepTime
                             )}
                         </div>
                         <div>
-                            <strong>Status:</strong> {selectedBooking.status}
+                            <strong>Status:</strong> {bookingData.status}
                         </div>
 
                         {/* Buttons */}
                         <div className="flex justify-end space-x-4 mt-4">
                             {!isEditing ? (
                                 <>
-                                    {selectedBooking.status === "Pending" && (
+                                    {bookingData.status === "Pending" && (
                                         <>
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="text-green-500 border-green-500 hover:bg-green-50"
-                                                onClick={() => handleAction(selectedBooking.id, "Accepted", prepTime)}
+                                                className="text-white bg-orangeColor border-orangeColor hover:text-orangeColor"
+                                                onClick={() => handleAction(bookingData.id, "Accepted", prepTime)}
                                             >
                                                 Accept
                                             </Button>
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="text-black border-black hover:bg-slate-50"
+                                                className="text-orangeColor border-orangeColor hover:bg-orangeColor hover:text-white"
                                                 onClick={() => setIsEditing(true)}
                                             >
                                                 Modify
                                             </Button>
                                         </>
                                     )}
-                                    {selectedBooking.status === "Accepted" && (
+                                    {bookingData.status === "Accepted" && (
                                         <>
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="text-blue-500 border-blue-500 hover:bg-blue-50"
+                                                className="text-orangeColor border-orangeColor hover:bg-orangeColor hover:text-white"
                                                 onClick={() => setIsEditing(true)}
                                             >
                                                 Modify
@@ -373,19 +373,19 @@ export default function AllBookingRequests() {
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="text-red-500 border-red-500 hover:bg-red-50"
-                                                onClick={() => handleAction(selectedBooking.id, "Canceled")}
+                                                className="text-white bg-black border-black hover:bg-slate-50"
+                                                onClick={() => handleAction(bookingData.id, "Canceled")}
                                             >
                                                 Cancel
                                             </Button>
                                         </>
                                     )}
-                                    {(selectedBooking.status === "Pending") && (
+                                    {(bookingData.status === "Pending") && (
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="text-red-500 border-red-500 hover:bg-red-50"
-                                            onClick={() => handleAction(selectedBooking.id, "Rejected")}
+                                            className="text-white bg-black border-black hover:bg-slate-50"
+                                            onClick={() => handleAction(bookingData.id, "Rejected")}
                                         >
                                             Reject
                                         </Button>
@@ -396,7 +396,7 @@ export default function AllBookingRequests() {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className="text-gray-500 border-gray-500 hover:bg-gray-50"
+                                        className="text-white bg-black border-black hover:bg-slate-50"
                                         onClick={() => setIsEditing(false)}
                                     >
                                         Cancel
@@ -404,7 +404,7 @@ export default function AllBookingRequests() {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className="text-blue-500 border-blue-500 hover:bg-blue-50"
+                                        className="text-white bg-orangeColor border-orangeColor hover:text-orangeColor"
                                         onClick={saveChanges}
                                     >
                                         Save
