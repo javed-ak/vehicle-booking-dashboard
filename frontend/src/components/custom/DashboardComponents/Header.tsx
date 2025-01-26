@@ -6,7 +6,7 @@ import { useUserData } from "@/context/userContext";
 import { Bell } from "lucide-react";
 import { useRequests } from "@/hooks";
 
-export default function Header({setSlide} : any) {
+export default function Header({ setSlide }: any) {
     const { requests } = useRequests();
 
     const navigate = useNavigate();
@@ -22,7 +22,8 @@ export default function Header({setSlide} : any) {
             <div className="flex items-center space-x-4">
                 <div className="relative">
                     <Bell
-                        className={`h-8 w-8 ${requests > 0 ? 'text-orangeColor animate-bounce' : 'text-gray-500'}`}
+                        className={`h-8 w-8 cursor-pointer ${requests > 0 ? 'text-orangeColor animate-bounce' : 'text-gray-500'}`}
+                        onClick={() => setSlide(2)}
                     />
                     {requests > 0 && (
                         <span className="absolute -top-2 -right-1 bg-red-500 text-white rounded-full px-1 text-[10px]">

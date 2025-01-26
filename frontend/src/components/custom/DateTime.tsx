@@ -257,10 +257,10 @@ export default function DateTime() {
                 <button
                   key={index}
                   className={`border p-3 rounded-lg transition-all ${isSlotDisabled(slot, index)
-                      ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-                      : selectedSlots.includes(index)
-                        ? "bg-orange-50 border-orangeColor"
-                        : "hover:bg-gray-100"
+                    ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                    : selectedSlots.includes(index)
+                      ? "bg-orange-50 border-orangeColor"
+                      : "hover:bg-gray-100"
                     }`}
                   onClick={() =>
                     !isSlotDisabled(slot, index) && handleTimeSlotClick(index)

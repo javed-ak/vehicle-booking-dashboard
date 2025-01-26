@@ -74,10 +74,21 @@ export default function AllBookingRequests() {
     const saveChanges = async () => {
         if (selectedBooking) {
             await updateBookingDetails(selectedBooking.id, editableFields);
+            // @ts-ignore
+            selectedBooking.prepTime = editableFields.prepTime || selectedBooking.prepTime;
+            // @ts-ignore
+            selectedBooking.dateTime = editableFields.dateTime || selectedBooking.dateTime;
+            // @ts-ignore
+            selectedBooking.vehicle = editableFields.vehicle || selectedBooking.vehicle;
+            // @ts-ignore
+            selectedBooking.pickup = editableFields.pickup || selectedBooking.pickup;
+            // @ts-ignore
+            selectedBooking.dropoff = editableFields.dropoff || selectedBooking.dropoff;
+
             toast.success("Request saved successfully!");
             setIsEditing(false); // Exit edit mode
             // setSelectedBooking(null); // Close the modal
-            setPrepTime("0");
+
         }
     };
 

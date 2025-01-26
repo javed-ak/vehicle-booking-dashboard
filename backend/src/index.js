@@ -15,7 +15,7 @@ app.use(cors({ credentials: true, origin: true }))
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/booking", bookingRouter);
 
-const res = await connect()
+await connect()
 
 app.get("/", async (req, res) => {
 });

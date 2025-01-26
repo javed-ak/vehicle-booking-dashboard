@@ -201,8 +201,9 @@ router.put('/', async (req, res) => {
             let [date, slot] = dateTime.split(' - ');
             // Splitting date and slot
             const dateObject = new Date(date);
+            dateObject.setHours(dateObject.getHours() + 5);
+            dateObject.setMinutes(dateObject.getMinutes() + 30);
             let start = 0;
-
 
             for (let i = 0; i < timeSlots.length; i++) {
                 if (timeSlots[i].slice(0, 8) === slot.slice(0, 8)) {
@@ -219,13 +220,12 @@ router.put('/', async (req, res) => {
                 }
             }
             end += (request.rows[0].prepTime);
-            dateObject.setHours(dateObject.getHours() + 5);
-            dateObject.setMinutes(dateObject.getMinutes() + 30);
+            const formattedDate = dateObject.toISOString().split('T')[0];
 
             for (let i = start; i <= end; i++) {
                 const timeSlot = timeSlots[i];
                 const bid = uuidv4();
-                const val = [bid, bookingid, dateObject, timeSlot];
+                const val = [bid, bookingid, formattedDate, timeSlot];
                 const query = `
                 INSERT INTO "booked_slots"
                 VALUES ($1, $2, $3,$4)
@@ -292,7 +292,7 @@ router.put('/', async (req, res) => {
             ]);
         }
 
-        if (body.status === "Rejected") {
+        if (body.status === "Canceled" || body.status === "Rejected") {
             const query = `
             DELETE FROM "booked_slots"
             WHERE "bookingRequestId" = $1;
@@ -378,11 +378,11 @@ router.put('/', async (req, res) => {
             end += request.rows[0].prepTime;
             dateObject.setHours(dateObject.getHours() + 5);
             dateObject.setMinutes(dateObject.getMinutes() + 30);
-
+            const formattedDate = dateObject.toISOString().split('T')[0];
             for (let i = start; i <= end; i++) {
                 const timeSlot = timeSlots[i];
                 const bid = uuidv4();
-                const val = [bid, bookingid, dateObject, timeSlot];
+                const val = [bid, bookingid, formattedDate, timeSlot];
                 const query = `
                 INSERT INTO "booked_slots"
                 VALUES ($1, $2, $3,$4)
@@ -490,11 +490,13 @@ router.get('/booked-slots/:date', async (req, res) => {
         }
         dateObject.setHours(dateObject.getHours() + 5);
         dateObject.setMinutes(dateObject.getMinutes() + 30);
-
+        const formattedDate = dateObject.toISOString().split('T')[0];
         const request = await client.query(
             'SELECT slot FROM "booked_slots" WHERE date = $1 ORDER BY slot;',
-            [dateObject]
+            [formattedDate]
         );
+        // console.log(request.rows);
+
         return res.json(request.rows);
     } catch (error) {
         console.log(error);
