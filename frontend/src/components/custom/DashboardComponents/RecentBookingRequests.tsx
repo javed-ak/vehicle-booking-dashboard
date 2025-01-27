@@ -2,10 +2,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useBookingData } from '@/context/setBooking';
 import { useDashboard } from '@/hooks';
-import React from 'react'
 
 function RecentBookingRequests({ setSlide }: { setSlide: any }) {
-    const { loading, dashboardData } = useDashboard();
+    const { dashboardData } = useDashboard();
     const { setBookingData } = useBookingData();
     return (
         <div className='mt-5'>
@@ -18,7 +17,12 @@ function RecentBookingRequests({ setSlide }: { setSlide: any }) {
                         {dashboardData.slice(0, 5).map((request) => (
                             <div
                                 key={request.id}
-                                className="flex justify-between items-center p-4 bg-gray-100 rounded"
+                                className="flex justify-between items-center p-4 bg-gray-100 rounded cursor-pointer"
+                                onClick={() => {
+                                    setSlide(2)
+                                    // @ts-ignore
+                                    setBookingData(request)
+                                }}
                             >
                                 <div>
                                     <div className="font-semibold">{request.firstName}</div>
@@ -27,11 +31,7 @@ function RecentBookingRequests({ setSlide }: { setSlide: any }) {
                                 <div className="flex items-center space-x-4">
                                     <div className="text-sm font-medium">{request.dateTime}</div>
                                     <Button
-                                        onClick={() => {
-                                            setSlide(2)
-                                            // @ts-ignore
-                                            setBookingData(request)
-                                        }}
+
                                         variant="outline"
                                         size="sm"
                                         className={`cursor-default

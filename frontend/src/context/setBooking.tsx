@@ -27,18 +27,8 @@ const BookingDataContext = createContext<BookingDataContextType | undefined>(
 
 // Create a provider component
 export function BookingDataProvider({ children }: { children: ReactNode }) {
-    const [bookingData, setBookingData] = useState<BookingData>({
-        vehicle: "",
-        dateTime: "",
-        firstName: "",
-        lastName: "",
-        email: "",
-        prepTime: 0,
-        phone: "",
-        pickup: "",
-        dropoff: "",
-        note: "",
-    });
+    // @ts-ignore
+    const [bookingData, setBookingData] = useState<BookingData>(null);
 
     return (
         <BookingDataContext.Provider value={{ bookingData, setBookingData }}>
