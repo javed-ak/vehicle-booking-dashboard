@@ -63,7 +63,7 @@ export default function DateTime() {
   };
 
   const handleSetSlots = () => {
-    if (selectedSlots.length > 3) {
+    if (selectedSlots.length > 1) {
       if (isContinuous()) {
         const formattedSlots = `${timeSlots[selectedSlots[0]].slice(
           0,
@@ -77,7 +77,7 @@ export default function DateTime() {
         setError("Please select continuous slots");
       }
     } else {
-      setError("Please select at least 4 slots");
+      setError("Please select at least 2 slots");
     }
   };
 
@@ -247,7 +247,7 @@ export default function DateTime() {
           <div className="font-bold text-lg mb-2 text-center sticky top-0 bg-white">
             Time Slot
             <div className="text-xs text-red-500 font-light">
-              Minimum 4 slot booking acceptable*
+              Minimum 2 slot booking acceptable*
             </div>
           </div>
 
@@ -296,7 +296,7 @@ export default function DateTime() {
         <Button
           className="mt-5 lg:mt-0"
           onClick={handleSetSlots}
-          disabled={selectedSlots.length < 4 || !isContinuous()}
+          disabled={selectedSlots.length < 2 || !isContinuous()}
         >
           Confirm Date & Time
         </Button>
